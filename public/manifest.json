@@ -8,7 +8,7 @@
       "type": "image/png"
     }
   ],
-  "start_url": "/",  
+  "start_url": "/",
   "display": "standalone",
   "theme_color": "#000000",
   "background_color": "#000000",
@@ -23,22 +23,22 @@
   "shortcuts": [
     {
       "name": "Home",
-      "url": "./", 
+      "url": "/",
       "description": "Home Page"
     },
     {
       "name": "Discover",
-      "url": "./discover",
+      "url": "/discover",
       "description": "Discover"
     },
     {
       "name": "Albums",
-      "url": "./albums", 
+      "url": "/albums",
       "description": "Albums"
     },
     {
       "name": "Search",
-      "url": "./",  
+      "url": "/",
       "description": "Search"
     }
   ],
