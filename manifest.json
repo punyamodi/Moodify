@@ -3,42 +3,41 @@
   "short_name": "MelodyMind",
   "icons": [
     {
-      "src": "/music_icon2.png",
+      "src": "/Moodify/music_icon2.png",
       "sizes": "512x512",
       "type": "image/png"
     }
   ],
-  "start_url": "/",
+  "start_url": "/Moodify/",
   "display": "standalone",
   "theme_color": "#000000",
   "background_color": "#000000",
-  "id": "/",
+  "id": "/Moodify/",
   "description": "MelodyMind is a music player that allows you to listen to your favorite music.",
   "lang": "en",
   "orientation": "portrait",
   "display_override": [
-    "standalone",
-    "window-controls-overlay"
+    "standalone"
   ],
   "shortcuts": [
     {
       "name": "Home",
-      "url": "/",
+      "url": "/Moodify/",
       "description": "Home Page"
     },
     {
       "name": "Discover",
-      "url": "/discover",
+      "url": "/Moodify/discover",
       "description": "Discover"
     },
     {
       "name": "Albums",
-      "url": "/albums",
+      "url": "/Moodify/albums",
       "description": "Albums"
     },
     {
       "name": "Search",
-      "url": "/",
+      "url": "/Moodify/",
       "description": "Search"
     }
   ],
