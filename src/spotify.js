@@ -5,29 +5,7 @@ const clientSecret = import.meta.env.VITE_SECRET;
 
 let token = null;
 
-const getAccessToken = async () => {
-    const tokenUrl = 'https://accounts.spotify.com/api/token';
-    const headers = {
-        'Content-Type': 'application/x-www-form-urlencoded',
-    };
-    const params = new URLSearchParams();
-    params.append('grant_type', 'client_credentials');
-    params.append('client_id', clientId);
-    params.append('client_secret', clientSecret);
 
-    try {
-        const response = await axios.post(tokenUrl, params, { headers });
-        token = response.data.access_token;  // This is the token you'll use in future requests
-        console.log('Access token fetched successfully:', token); // Log the token to see it
-    } catch (error) {
-        console.error('Error fetching access token:', error.response ? error.response.data : error.message);
-    }
-};
-
-// Call the function to get the token
-getAccessToken();
-
-setInterval(getAccessToken, 30 * 60 * 1000); // 30 minutes
 
 const fetchWebApi = async (endpoint, method, body) => {
     try {

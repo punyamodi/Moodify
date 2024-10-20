@@ -33,7 +33,7 @@ function Landing() {
           <Route path="/discover" element={<Discover/>}></Route>
           <Route path="/albums" element={<AlbumFull />} />
           <Route path="/innerAlbum" element={<Inneralbum />} />
-          <Route path="albums/innerAlbum" element={<Inneralbum />} />
+          <Route path="/src/Albumsongs/inneralbum.jsx" element={<Inneralbum />} />
 
           {isAboveMedium &&(
           <Route path="/artist" element={<ArtistPage/>}></Route>

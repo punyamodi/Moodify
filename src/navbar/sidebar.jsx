@@ -108,19 +108,6 @@ function Sidebar() {
               </div>
             </Link>
 
-            <Link to="/albums">
-              <div
-                onClick={() => {
-                  localStorage.setItem("selected", "/albums");
-                  setSelected("/albums");
-                }}
-                className="text-center"
-              >
-                <FaCompactDisc className="mx-auto mb-1 h-8 w-8" /> {/* Icon size increased */}
-                <span className={`${selected === "/albums" ? "text-white" : "hover:text-white"} transition duration-200`}>Albums</span>
-              </div>
-            </Link>
-
             <Link to="/liked">
               <div
                 onClick={() => {

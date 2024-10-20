@@ -44,8 +44,8 @@ function AlbumFull({ names }) {
   const play = async (id) => {
     localStorage.setItem("innerAlbum", id);
     setInneralbum(id);
-    localStorage.setItem("selected", "/albums");
-    setSelected("/albums");
+    localStorage.setItem("selected", "/albums1");
+    setSelected("/albums1");
   };
 
   return (
