@@ -1,40 +1,46 @@
-# deploy.yml
-name: Deploy to GitHub Pages
+name: Deploy Vite app to GitHub Pages
 
 on:
   push:
     branches:
-      - main
+      - main  # Deploy on push to the main branch
 
 jobs:
   build_and_deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+      # Step 1: Checkout the latest code
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
-      - name: Cache node modules
-        uses: actions/cache@v2
+      # Step 2: Set up Node.js
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
         with:
-          path: node_modules
-          key: ${{ runner.os }}-node-${{ hashFiles('package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
+          node-version: '16'  # Ensure this matches the version you are using
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v2
-        with:
-          node-version: '14'
-
+      # Step 3: Install dependencies
       - name: Install dependencies
         run: npm install
 
-      - name: Build project
+      # Step 4: Inject environment variables
+      - name: Set up environment variables
+        run: |
+          echo "VITE_FIREBASE_API_KEY=${{ secrets.VITE_FIREBASE_API_KEY }}" >> $GITHUB_ENV
+          echo "VITE_FIREBASE_AUTH_DOMAIN=${{ secrets.VITE_FIREBASE_AUTH_DOMAIN }}" >> $GITHUB_ENV
+          echo "VITE_FIREBASE_PROJECT_ID=${{ secrets.VITE_FIREBASE_PROJECT_ID }}" >> $GITHUB_ENV
+          echo "VITE_FIREBASE_STORAGE_BUCKET=${{ secrets.VITE_FIREBASE_STORAGE_BUCKET }}" >> $GITHUB_ENV
+          echo "VITE_FIREBASE_MESSAGING_SENDER_ID=${{ secrets.VITE_FIREBASE_MESSAGING_SENDER_ID }}" >> $GITHUB_ENV
+          echo "VITE_FIREBASE_APP_ID=${{ secrets.VITE_FIREBASE_APP_ID }}" >> $GITHUB_ENV
+
+      # Step 5: Build the Vite project
+      - name: Build the project
         run: npm run build
 
+      # Step 6: Deploy to GitHub Pages
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
-          github_token: ${{ secrets.G_TOKEN }}  # Use the default GitHub token
-          publish_dir: ./dist
+          github_token: ${{ secrets.GITHUB_TOKEN }}  # GitHub automatically provides this token
+          publish_dir: ./dist  # Directory where Vite outputs the build
