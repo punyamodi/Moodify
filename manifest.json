@@ -1,0 +1,49 @@
+{
+  "name": "MelodyMind",
+  "short_name": "MelodyMind",
+  "icons": [
+    {
+      "src": "/music_icon2.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "start_url": "/",  
+  "display": "standalone",
+  "theme_color": "#000000",
+  "background_color": "#000000",
+  "id": "/",
+  "description": "MelodyMind is a music player that allows you to listen to your favorite music.",
+  "lang": "en",
+  "orientation": "portrait",
+  "display_override": [
+    "standalone",
+    "window-controls-overlay"
+  ],
+  "shortcuts": [
+    {
+      "name": "Home",
+      "url": "./", 
+      "description": "Home Page"
+    },
+    {
+      "name": "Discover",
+      "url": "./discover",
+      "description": "Discover"
+    },
+    {
+      "name": "Albums",
+      "url": "./albums", 
+      "description": "Albums"
+    },
+    {
+      "name": "Search",
+      "url": "./",  
+      "description": "Search"
+    }
+  ],
+  "categories": [
+    "music",
+    "personalization"
+  ]
+}
