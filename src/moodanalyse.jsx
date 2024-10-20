@@ -5,13 +5,15 @@ import useMediaQuery from './useMedia';
 import * as faceapi from 'face-api.js';
 import { songBymood } from './saavnapi';
 import he from 'he';
+
 function Moodanalyse() {
-  const { songid,setSongid} = useContext(Context);
+  const { setSongid } = useContext(Context);
   const isAboveMedium = useMediaQuery("(min-width: 768px)");
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
   const [dominantExpression, setDominantExpression] = useState(null);
   const [musicInfo, setMusicInfo] = useState([]);
+
   useEffect(() => {
     if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
       startVideo();
@@ -53,25 +55,29 @@ function Moodanalyse() {
       setInterval(async () => {
         if (!videoRef.current || !canvasRef.current) return;
 
+        // Detect faces, landmarks, and expressions
         const detections = await faceapi.detectAllFaces(videoRef.current,
-          new faceapi.TinyFaceDetectorOptions()).withFaceLandmarks().withFaceExpressions();
+          new faceapi.TinyFaceDetectorOptions({
+            scoreThreshold: 0.3 // Set minimum confidence to 30%
+          })
+        ).withFaceLandmarks().withFaceExpressions();
+        
 
         if (detections.length > 0) {
           const displaySize = { width: videoRef.current.videoWidth, height: videoRef.current.videoHeight };
 
-          canvasRef.current.width = displaySize.width;
-          canvasRef.current.height = displaySize.height;
+          // Ensure canvas matches the video's size
+          faceapi.matchDimensions(canvasRef.current, displaySize);
+
+          const resizedDetections = faceapi.resizeResults(detections, displaySize);
 
           const context = canvasRef.current.getContext('2d');
           context.clearRect(0, 0, displaySize.width, displaySize.height);
-
-          const resizedDetections = faceapi.resizeResults(detections, displaySize);
 
           faceapi.draw.drawDetections(canvasRef.current, resizedDetections);
           faceapi.draw.drawFaceLandmarks(canvasRef.current, resizedDetections);
           faceapi.draw.drawFaceExpressions(canvasRef.current, resizedDetections);
 
-          // Get and store the dominant expression of the first detected face
           const firstDetection = resizedDetections[0];
           if (firstDetection) {
             const expressions = firstDetection.expressions;
@@ -79,11 +85,12 @@ function Moodanalyse() {
             setDominantExpression(dominant);
           }
         }
-      }, 100); // Adjust the interval as needed
+      }, 100); // Reduce the interval to 10ms for faster detection
     } catch (err) {
       console.error("Error detecting faces:", err);
     }
   };
+
   useEffect(() => {
     let intervalId;
 
@@ -110,72 +117,100 @@ function Moodanalyse() {
     }
     return () => clearInterval(intervalId);
   }, [dominantExpression]);
+
   const play = async (id) => {
-    const a = localStorage.setItem("songid", id);
-   setSongid(id);
- };
+    localStorage.setItem("songid", id);
+    setSongid(id);
+  };
+
   return (
-    <div>
+    <div className="bg-black text-white h-screen">
       {isAboveMedium ? (
-        <div className="h-screen flex flex-col items-center overflow-y-scroll overflow-x-hidden">
-          <div>
-            <h1 className='text-2xl text-red mt-8'>Let Your Mood Sing For You</h1>
+        <div className="flex flex-col items-center">
+          <h1 className="text-4xl text-green-500 mt-8 font-semibold">Let Your Mood Sing For You</h1>
+          <div className="w-full flex mt-10">
+            <div className="w-1/3 p-4 relative">
+              <h1 className="text-2xl text-green-400 mb-4 font-semibold">Face Detection</h1>
+              <div className="relative">
+                <video
+                  ref={videoRef}
+                  autoPlay
+                  muted
+                  className="rounded-2xl shadow-lg"
+                  style={{ height: "600px", width: "800px", objectFit: "cover", borderRadius: '20px' }}
+                />
+                {/* Manually adjust canvas position using top, left, right, bottom */}
+                <canvas
+                  ref={canvasRef}
+                  className="absolute top-0 left-0 rounded-2xl"
+                  style={{ height: "600px", width: "800px", zIndex: 10, borderRadius: '20px', top: '0', left: '-160px' }} 
+                />
+              </div>
+            </div>
+            <div className="w-2/3 pl-10">
+              <h1 className="text-xl text-green-400 mb-4 font-semibold">Suggested Songs for Your Mood</h1>
+              <div className="overflow-y-scroll h-full pr-4">
+                {musicInfo.slice(0, 10).map((song, index) => (
+                  <div
+                    key={song.id}
+                    className="flex items-center gap-4 bg-gray-800 p-4 mb-4 rounded-lg cursor-pointer hover:bg-gray-700 transition duration-300"
+                    onClick={() => play(song.id)}
+                  >
+                    <h1 className="text-lg font-semibold">#{index + 1}</h1>
+                    <img
+                      src={song.image.url}
+                      alt={song.name}
+                      className="h-16 w-16 rounded-full object-cover"
+                    />
+                    <div className="flex-grow">
+                      <h1 className="text-lg font-bold">{song.name}</h1>
+                      <p className="text-gray-400">{song.artist} • {song.year}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
-          <div className='w-screen h-screen flex'>
-            <div className='w-1/3 p-4 h-screen relative'>
-              <h1 className='text-blue text-2xl'>Face Detection</h1>
-              <video ref={videoRef} autoPlay muted style={{ height: "600px", width: "800px" }}></video>
-              <canvas ref={canvasRef} className='absolute top-0 left-0'></canvas>
-            </div>
-            <div className='w-2/3 '>
-            {musicInfo.slice(0, 10).map((song, index) => (
-                 <div
-                 className="w-4/6 bg-deep-grey flex items-center gap-8 p-4 m-5 cursor-pointer"
-                 key={song.id}
-                 onClick={() => play(song.id)}
-               >
-                 <h1 className="text-md w-12">#{index + 1}</h1>{" "}
-                 {/* Fixed width for index */}
-                 <img src={song.image.url} className="h-12" />{" "}
-                 {/* Keep image size fixed */}
-                 <h1 className="text-mdflex-grow">{song.year}</h1>{" "}
-                 {/* Allow year to take remaining space */}
-                 <h1 className="text-md flex-grow">{song.name}</h1>
-                {" "}
-                 {/* Keep image size fixed */}
-               </div>
-              ))}
-            </div>
-          </div>
-          <div className='mb-48'>
-            </div>
         </div>
       ) : (
-       <div className='h-screen flex-col flex-wrap items-center overflow-y-scroll justify-center'>
-            <h1 className='text-red ml-12 text-xl'>Let Your Mood Sing For You</h1>
-            <div style={{ position: 'relative', width: '300px', height: '300px' }}>
-  <h1 className='text-blue mt-4 ml-28'>Face Detection</h1>
-  <video ref={videoRef} autoPlay muted style={{ position: 'absolute', top: 0, left: 0, zIndex: 1, height: "300px", width: "300px" }} className='ml-8'></video>
-  <canvas ref={canvasRef} style={{ position: 'absolute', top: 0, left: 0, zIndex: 10, height: "300px", width: "300px" }} className=''></canvas>
-</div>
-              <div className='mb-80'>
-                          {musicInfo.slice(0, 10).map((song, index) => (
-                <div
-                  className="w-5/6 bg-deep-grey flex items-center gap-8 p-4 m-5 cursor-pointer"
-                  key={song.id}
-                  onClick={() => play(song.id)}
-                >
-                  <h1 className="text-sm w-12">#{index + 1}</h1>{" "}
-                  {/* Fixed width for index */}
-                  <img src={song.image.url} className="h-12" />{" "}
-                  {/* Keep image size fixed */}
-                  <h1 className="text-sm flex-grow">{song.year}</h1>{" "}
-                  {/* Allow year to take remaining space */}
-                  <h1 className="text-sm flex-grow">{song.name}</h1>
-                
+        <div className="flex flex-col items-center">
+          <h1 className="text-3xl text-green-500 mt-8 font-semibold">Let Your Mood Sing For You</h1>
+          <div className="relative mt-6" style={{ width: '300px', height: '300px' }}>
+            <h1 className="text-lg text-green-400 mb-2 font-semibold">Face Detection</h1>
+            <video
+              ref={videoRef}
+              autoPlay
+              muted
+              className="absolute top-0 left-0 z-1 rounded-2xl shadow-lg"
+              style={{ width: '300px', height: '300px', objectFit: 'cover', borderRadius: '20px' }}
+            />
+            {/* Canvas manually positioned */}
+            <canvas
+              ref={canvasRef}
+              className="absolute top-0 left-0 z-10 rounded-2xl"
+              style={{ width: '300px', height: '300px', top: '0', left: '0' }}
+            />
+          </div>
+          <div className="mt-8">
+            {musicInfo.slice(0, 10).map((song, index) => (
+              <div
+                key={song.id}
+                className="flex items-center gap-4 bg-gray-800 p-4 mb-4 rounded-lg cursor-pointer hover:bg-gray-700 transition duration-300"
+                onClick={() => play(song.id)}
+              >
+                <h1 className="text-lg font-semibold">#{index + 1}</h1>
+                <img
+                  src={song.image.url}
+                  alt={song.name}
+                  className="h-16 w-16 rounded-full object-cover"
+                />
+                <div className="flex-grow">
+                  <h1 className="text-lg font-bold">{song.name}</h1>
+                  <p className="text-gray-400">{song.artist} • {song.year}</p>
                 </div>
-              ))}
-                    </div>
+              </div>
+            ))}
+          </div>
         </div>
       )}
     </div>

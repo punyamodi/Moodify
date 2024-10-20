@@ -9,34 +9,28 @@ function App() {
   const { setSelected } = useContext(Context);
   const navigate = useNavigate();
   const location = useLocation();
+
   useEffect(() => {
-    // Initialize 'selected' state from localStorage on first mount
     const lastSelected = localStorage.getItem("selected") || "/";
     setSelected(lastSelected);
-
-    // Navigate to the last selected path from localStorage
     navigate(lastSelected);
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // Empty dependency array ensures this runs only once on mount
+  }, []);
 
   useEffect(() => {
-    // Update 'selected' state and localStorage whenever location changes
     setSelected(location.pathname);
     localStorage.setItem("selected", location.pathname);
   }, [location.pathname, setSelected]);
 
-
-
   return (
-    <>
-     <div className="flex">
+    <div className="flex h-screen bg-spotify-black text-white">
       <Sidebar />
-      <Landing />
-     </div>
-   
-     </>
-  )
+      <div className="flex-1 overflow-y-auto">
+        <div className="bg-gradient-to-b from-spotify-dark-gray to-spotify-black p-8">
+          <Landing />
+        </div>
+      </div>
+    </div>
+  );
 }
 
-export default App
+export default App;

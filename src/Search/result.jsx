@@ -1,20 +1,17 @@
-import React, { useContext } from "react";
-
+import React, { useContext, useState, useEffect } from "react";
 import { addRecents } from "../Firebase/database";
-import { useState, useEffect } from "react";
 import { Context } from "../main";
 import useMediaQuery from "../useMedia";
-import { MelodyMusicsongs, Searchsongs, Searchsongs2 } from "../saavnapi";
+import { Searchsongs, Searchsongs2 } from "../saavnapi";
 import he from "he";
 import { Link, useNavigate } from "react-router-dom";
+
 function Result({ names }) {
-  const { setSongid, setSelected, setSinger, setInneralbum } =
-    useContext(Context);
+  const { setSongid, setSelected, setSinger, setInneralbum } = useContext(Context);
   const [musicInfo, setMusicInfo] = useState([]);
-  const [limit, setLimit] = useState(5);
-  const [topquery, setTopquery] = useState([]);
   const [albuminfo, setAlbuminfo] = useState([]);
   const [artistinfo, setArtistinfo] = useState([]);
+  const [topquery, setTopquery] = useState([]);
   const isAboveMedium = useMediaQuery("(min-width:768px)");
   const [loading, setLoading] = useState(true);
   const Navigate = useNavigate();
@@ -24,6 +21,7 @@ function Result({ names }) {
       try {
         const res = await Searchsongs(names);
         const res2 = await Searchsongs2(names);
+
         setMusicInfo(
           res2.results.map((song) => ({
             id: song.id,
@@ -31,28 +29,32 @@ function Result({ names }) {
             image: song.image[1].url,
           }))
         );
+
         setAlbuminfo(
-          res.albums.results.map((song) => ({
-            id: song.id,
-            name: he.decode(song.title),
-            image: song.image[1].url,
+          res.albums.results.map((album) => ({
+            id: album.id,
+            name: he.decode(album.title),
+            image: album.image[1].url,
           }))
         );
+
         setArtistinfo(
-          res.artists.results.map((song) => ({
-            id: song.id,
-            name: he.decode(song.title),
-            image: song.image[1].url,
+          res.artists.results.map((artist) => ({
+            id: artist.id,
+            name: he.decode(artist.title),
+            image: artist.image[1].url,
           }))
         );
+
         setTopquery(
-          res.topQuery.results.map((song) => ({
-            id: song.id,
-            name: he.decode(song.title),
-            image: song.image[1].url,
-            type: song.type,
+          res.topQuery.results.map((query) => ({
+            id: query.id,
+            name: he.decode(query.title),
+            image: query.image[1].url,
+            type: query.type,
           }))
         );
+
         setLoading(false);
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -67,12 +69,11 @@ function Result({ names }) {
     setSongid(id);
 
     const user = JSON.parse(localStorage.getItem("Users"));
-
     if (user) {
       try {
         await addRecents(user.uid, id, name, image);
       } catch (error) {
-        console.log(error);
+        console.error(error);
       }
     }
   };
@@ -84,232 +85,209 @@ function Result({ names }) {
     localStorage.setItem("selected", "/artist");
     setSelected("/artist");
   };
-  const playalbum = async (id) => {
+
+  const playalbum = (id) => {
     localStorage.setItem("innerAlbum", id);
     setInneralbum(id);
 
     localStorage.setItem("selected", "/albums");
     setSelected("/albums");
   };
-  const playquery = async (id) => {
-    switch (topquery[0].type) {
+
+  const playquery = async (id, type) => {
+    switch (type) {
       case "album":
-        localStorage.setItem("innerAlbum", id);
-        setInneralbum(id);
-        localStorage.setItem("selected", "albums");
-        setSelected("albums");
+        playalbum(id);
         Navigate("/innerAlbum");
         break;
       case "artist":
-        localStorage.setItem("singer", id);
-        setSinger(id);
-
-        localStorage.setItem("selected", "artist");
-        setSelected("artist");
+        playsinger(id);
         Navigate("/innerartist");
         break;
       case "song":
-        localStorage.setItem("songid", id);
-        setSongid(id);
+        play(id);
+        break;
+      default:
         break;
     }
   };
 
   return (
-    <div className=" p-4  gap-5 mb-12 cursor-pointer ">
+    <div className="p-4 gap-5 mb-12 cursor-pointer">
       {!loading ? (
         <>
           {isAboveMedium ? (
             <>
-              <h1 className="text-2xl p-2 m-2">
-                Top <span className="text-red font-bold">Songs</span>
+              {/* Top Songs Section */}
+              <h1 className="text-2xl p-2 m-2 text-white font-semibold">
+                Top <span className="text-green-500">Songs</span>
               </h1>
-              <div className="flex flex-wrap p-4  gap-5">
+              <div className="grid grid-cols-4 gap-6">
                 {musicInfo.slice(0, 20).map((song) => (
                   <div
-                    className="h-68 border-1 bg-deep-grey w-56 text-white mr-5 border-0 rounded-md p-4 mt-5"
+                    className="bg-gray-900 hover:bg-gray-800 transition duration-300 p-4 rounded-md"
                     key={song.id}
                     onClick={() => play(song.id, song.name, song.image)}
                   >
                     <img
                       src={song.image}
-                      alt={song.title}
-                      className="h-48 w-56 object-cover border-0 rounded-md"
+                      alt={song.name}
+                      className="h-48 w-full object-cover rounded-md mb-4"
                     />
-                    <h1 className="text-center font-bold text-white">
-                      {song.name}
-                    </h1>
+                    <h1 className="text-center text-white font-semibold truncate">{song.name}</h1>
                   </div>
                 ))}
               </div>
 
-              <h1 className="text-2xl p-2 m-2">
-                Top <span className="text-red font-bold">Albums</span>
+              {/* Top Albums Section */}
+              <h1 className="text-2xl p-2 m-2 text-white font-semibold">
+                Top <span className="text-green-500">Albums</span>
               </h1>
+              <div className="grid grid-cols-4 gap-6">
+                {albuminfo.map((album) => (
+                  <Link to="/innerAlbum" key={album.id}>
+                    <div
+                      className="bg-gray-900 hover:bg-gray-800 transition duration-300 p-4 rounded-md"
+                      onClick={() => playalbum(album.id)}
+                    >
+                      <img
+                        src={album.image}
+                        alt={album.name}
+                        className="h-48 w-full object-cover rounded-md mb-4"
+                      />
+                      <h1 className="text-center text-white font-semibold truncate">{album.name}</h1>
+                    </div>
+                  </Link>
+                ))}
+              </div>
 
-              <div className="flex flex-wrap p-4  gap-5">
-                {albuminfo.slice(0, limit).map((song) => (
-                  <Link to="/innerAlbum">
+              {/* Top Artists Section */}
+              <h1 className="text-2xl p-2 m-2 text-white font-semibold">
+                Top <span className="text-green-500">Artists</span>
+              </h1>
+              <div className="grid grid-cols-4 gap-6">
+                {artistinfo.map((artist) => (
+                  <Link to="/innerartist" key={artist.id}>
                     <div
-                      className="h-68 border-1 bg-deep-grey w-56 text-white mr-5  rounded-md p-4 mt-5"
-                      key={song.id}
-                      onClick={() => playalbum(song.id)}
+                      className="bg-gray-900 hover:bg-gray-800 transition duration-300 p-4 rounded-md"
+                      onClick={() => playsinger(artist.id)}
                     >
                       <img
-                        src={song.image}
-                        alt={song.title}
-                        className="h-48 w-56 object-cover border-0 rounded-md"
+                        src={artist.image}
+                        alt={artist.name}
+                        className="h-48 w-full object-cover rounded-full mb-4"
                       />
-                      <h1 className="text-center font-bold text-white">
-                        {song.name}
-                      </h1>
+                      <h1 className="text-center text-white font-semibold truncate">{artist.name}</h1>
                     </div>
                   </Link>
                 ))}
               </div>
-              <h1 className="text-2xl p-2 m-2">
-                Top <span className="text-red font-bold">Artist</span>
+
+              {/* Top Queries Section */}
+              <h1 className="text-2xl p-2 m-2 text-white font-semibold">
+                Top <span className="text-green-500">Queries</span>
               </h1>
-              <div className="flex flex-wrap p-4  gap-5">
-                {artistinfo.slice(0, limit).map((song) => (
-                  <Link to="/innerartist">
-                    <div
-                      className="h-68 border-1 bg-transparent w-56 text-white mr-5 border-0 rounded-md  p-4 mt-5"
-                      key={song.id}
-                      onClick={() => playsinger(song.id)}
-                    >
-                      <img
-                        src={song.image}
-                        alt={song.title}
-                        className="h-48 w-56 object-cover border-0 rounded-full"
-                      />
-                      <h1 className="text-center font-bold text-white">
-                        {song.name}
-                      </h1>
-                    </div>
-                  </Link>
-                ))}
-              </div>
-              <h1 className="text-2xl p-2 m-2">
-                Top <span className="text-red font-bold">Query</span>
-              </h1>
-              <div className="flex flex-wrap p-4 mb-8 gap-5">
-                {topquery.slice(0, limit).map((song) => (
+              <div className="grid grid-cols-4 gap-6">
+                {topquery.map((query) => (
                   <div
-                    className="h-68 border-1 bg-deep-grey w-56 text-white mr-5  rounded-md p-4 mt-5"
-                    key={song.id}
-                    onClick={() => playquery(song.id)}
+                    className="bg-gray-900 hover:bg-gray-800 transition duration-300 p-4 rounded-md"
+                    key={query.id}
+                    onClick={() => playquery(query.id, query.type)}
                   >
                     <img
-                      src={song.image}
-                      alt={song.title}
-                      className="h-48 w-56 object-cover border-0 rounded-md"
+                      src={query.image}
+                      alt={query.name}
+                      className="h-48 w-full object-cover rounded-md mb-4"
                     />
-                    <h1 className="text-center font-bold text-white">
-                      {song.name}
-                    </h1>
+                    <h1 className="text-center text-white font-semibold truncate">{query.name}</h1>
                   </div>
                 ))}
               </div>
             </>
           ) : (
             <>
-              <h1 className="text-2xl p-2 m-2">
-                Top <span className="text-red font-bold">Songs</span>
+              {/* Mobile View */}
+              <h1 className="text-2xl p-2 m-2 text-white font-semibold">
+                Top <span className="text-green-500">Songs</span>
               </h1>
-              <div className="flex overflow-x-scroll overflow-y-hidden space-x-4 p-2">
-                {musicInfo.slice(0, 40).map((song) => (
+              <div className="flex overflow-x-scroll space-x-4 p-2">
+                {musicInfo.slice(0, 20).map((song) => (
                   <div
-                    className="flex flex-col items-center pb-4"
+                    className="h-28 p-2 bg-gray-900 w-28 text-white rounded-md hover:bg-gray-800 transition duration-200"
                     key={song.id}
                     onClick={() => play(song.id, song.name, song.image)}
                   >
-                    <div className="h-28 p-2 border-1 bg-deep-grey w-28 text-white rounded-md mt-2">
-                      <img
-                        src={song.image}
-                        alt={song.name}
-                        className="h-24 w-24 mb-2 object-cover "
-                      />
-                      <h1 className="text-center font-bold text-white text-sm truncate">
-                        {song.name}
-                      </h1>
-                    </div>
+                    <img
+                      src={song.image}
+                      alt={song.name}
+                      className="h-24 w-24 object-cover rounded-md mb-2"
+                    />
+                    <h1 className="text-center text-sm truncate font-semibold">{song.name}</h1>
                   </div>
                 ))}
               </div>
 
-              <h1 className="text-2xl p-2 mt-5">
-                Top <span className="text-red font-bold">Albums</span>
+              {/* Top Albums Section */}
+              <h1 className="text-2xl p-2 m-2 text-white font-semibold">
+                Top <span className="text-green-500">Albums</span>
               </h1>
-              <div className="flex overflow-x-scroll overflow-y-hidden space-x-4 p-2">
+              <div className="flex overflow-x-scroll space-x-4 p-2">
                 {albuminfo.slice(0, 10).map((album) => (
-                  <Link to="/innerAlbum">
+                  <Link to="/innerAlbum" key={album.id}>
                     <div
-                      className="flex flex-col items-center pb-4"
-                      key={album.id}
+                      className="h-28 p-2 bg-gray-900 w-28 text-white rounded-md hover:bg-gray-800 transition duration-200"
                       onClick={() => playalbum(album.id)}
                     >
-                      <div className="h-28 p-2 border-1 bg-deep-grey w-28 text-white rounded-md mt-2">
-                        <img
-                          src={album.image}
-                          alt={album.name}
-                          className="h-24 w-24 mb-2 object-cover"
-                        />
-                        <h1 className="text-center font-bold text-white text-sm truncate">
-                          {album.name}
-                        </h1>
-                      </div>
+                      <img
+                        src={album.image}
+                        alt={album.name}
+                        className="h-24 w-24 object-cover rounded-md mb-2"
+                      />
+                      <h1 className="text-center text-sm truncate font-semibold">{album.name}</h1>
                     </div>
                   </Link>
                 ))}
               </div>
 
-              <h1 className="text-2xl p-2 mt-5">
-                Top <span className="text-red font-bold">Artists</span>
+              {/* Top Artists Section */}
+              <h1 className="text-2xl p-2 m-2 text-white font-semibold">
+                Top <span className="text-green-500">Artists</span>
               </h1>
-              <div className="flex overflow-x-scroll overflow-y-hidden space-x-4 p-2">
+              <div className="flex overflow-x-scroll space-x-4 p-2">
                 {artistinfo.slice(0, 10).map((artist) => (
-                  <Link to="/innerartist">
+                  <Link to="/innerartist" key={artist.id}>
                     <div
-                      className="flex flex-col items-center pb-4"
-                      key={artist.id}
+                      className="h-28 p-2 bg-gray-900 w-28 text-white rounded-md hover:bg-gray-800 transition duration-200"
                       onClick={() => playsinger(artist.id)}
                     >
-                      <div className="h-28 p-2 border-1 bg-deep-grey w-28 text-white rounded-md mt-2">
-                        <img
-                          src={artist.image}
-                          alt={artist.name}
-                          className="h-24 w-24 mb-2 object-cover "
-                        />
-                        <h1 className="text-center font-bold text-white text-sm truncate">
-                          {artist.name}
-                        </h1>
-                      </div>
+                      <img
+                        src={artist.image}
+                        alt={artist.name}
+                        className="h-24 w-24 object-cover rounded-full mb-2"
+                      />
+                      <h1 className="text-center text-sm truncate font-semibold">{artist.name}</h1>
                     </div>
                   </Link>
                 ))}
               </div>
 
-              <h1 className="text-2xl p-2 mt-5">
-                Top <span className="text-red font-bold">Query</span>
+              {/* Top Queries Section */}
+              <h1 className="text-2xl p-2 m-2 text-white font-semibold">
+                Top <span className="text-green-500">Queries</span>
               </h1>
-              <div className="flex overflow-x-scroll overflow-y-hidden space-x-4 p-2">
+              <div className="flex overflow-x-scroll space-x-4 p-2">
                 {topquery.slice(0, 10).map((query) => (
                   <div
-                    className="flex flex-col items-center pb-4"
+                    className="h-28 p-2 bg-gray-900 w-28 text-white rounded-md hover:bg-gray-800 transition duration-200"
                     key={query.id}
-                    onClick={() => playquery(query.id)}
+                    onClick={() => playquery(query.id, query.type)}
                   >
-                    <div className="h-28 p-2 border-1 bg-deep-grey w-28 text-white rounded-md mt-2">
-                      <img
-                        src={query.image}
-                        alt={query.name}
-                        className="h-24 w-24 mb-2 object-cover "
-                      />
-                      <h1 className="text-center font-bold text-white text-sm truncate">
-                        {query.name}
-                      </h1>
-                    </div>
+                    <img
+                      src={query.image}
+                      alt={query.name}
+                      className="h-24 w-24 object-cover rounded-md mb-2"
+                    />
+                    <h1 className="text-center text-sm truncate font-semibold">{query.name}</h1>
                   </div>
                 ))}
               </div>
@@ -317,7 +295,7 @@ function Result({ names }) {
           )}
         </>
       ) : (
-        <span className="text-red text-3xl font-bold">Loading.....</span>
+        <span className="text-green-500 text-3xl font-bold">Loading...</span>
       )}
     </div>
   );

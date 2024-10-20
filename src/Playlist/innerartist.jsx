@@ -1,31 +1,25 @@
 import useMediaQuery from "../useMedia";
-import album from "../assets/albumfull.svg";
-import { useEffect, useState } from "react";
-import axios from "axios";
-import { useContext } from "react";
-import { Context } from "../main";
+import { useEffect, useState, useContext } from "react";
 import he from "he";
-import { MelodyMusicsongs, albumsongs, albumsongsinner, artist, artistSongs, searchResult } from "../saavnapi";
+import { artistSongs } from "../saavnapi";
 import { Link } from "react-router-dom";
-import  {addRecents} from '../Firebase/database';
-function Innerartist({names}) {
+import { addRecents } from "../Firebase/database";
+import { Context } from "../main";
+
+function Innerartist({ names }) {
   const isAboveMedium = useMediaQuery("(min-width:768px)");
-  const { setSongid,singer,page,setInneralbum,setSelected} = useContext(Context);
- const[image,setimage]=useState([]);
-const[albuminfo,setAlbuminfo]=useState([]);
+  const { setSongid, singer, setInneralbum, setSelected } = useContext(Context);
+  const [image, setImage] = useState({});
+  const [albuminfo, setAlbuminfo] = useState([]);
   const [musicInfo, setMusicInfo] = useState([]);
   const [loading, setLoading] = useState(true);
-  // Function to handle expanding to show more results
-  const expandResults = () => {
-    setLimit(musicInfo.length);
-  };
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const res = await artistSongs(singer);
-       setimage(res.data.data);
-      
+        setImage(res.data.data);
+
         setMusicInfo(
           res.data.data.topSongs.map((song) => ({
             id: song.id,
@@ -36,14 +30,14 @@ const[albuminfo,setAlbuminfo]=useState([]);
           }))
         );
         setAlbuminfo(
-            res.data.data.topAlbums.map((song) => ({
-              aid: song.id,
-              aname: he.decode(song.name),
-              aimage: song.image[1].url,
-              aartist: song.artists.primary[0].name,
-              ayear: song.year,
-            }))
-          );
+          res.data.data.topAlbums.map((album) => ({
+            aid: album.id,
+            aname: he.decode(album.name),
+            aimage: album.image[1].url,
+            aartist: album.artists.primary[0].name,
+            ayear: album.year,
+          }))
+        );
         setLoading(false);
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -51,164 +45,151 @@ const[albuminfo,setAlbuminfo]=useState([]);
     };
 
     fetchData();
-  }, [names]);
+  }, [singer]);
 
-  const play = async(id,name,image) => {
-  localStorage.setItem("songid", id);
-  setSongid(id);
-  const user=JSON.parse(localStorage.getItem("Users"));
-   
-    if(user){
-    try{
-     await addRecents(user.uid,id,name,image);
-    }
-    catch(error){
-      console.log(error);
-    }
-  }
+  const play = async (id, name, image) => {
+    localStorage.setItem("songid", id);
+    setSongid(id);
+    const user = JSON.parse(localStorage.getItem("Users"));
 
+    if (user) {
+      try {
+        await addRecents(user.uid, id, name, image);
+      } catch (error) {
+        console.error(error);
+      }
+    }
   };
-  const plays = async (id) => {
-  
+
+  const plays = (id) => {
     localStorage.setItem("innerAlbum", id);
     setInneralbum(id);
 
     localStorage.setItem("selected", "/albums");
     setSelected("/albums");
   };
+
   return (
     <>
       {!loading ? (
         <>
           {isAboveMedium ? (
-            <div
-              className="h-screen w-5/6 m-12  mb-28 flex flex-col bg-gradient-album border-1 border-deep-grey shadow-lg overflow-y"
-              style={{
-                overflowY: "scroll",
-                scrollbarWidth: "none",
-                msOverflowStyle: "none",
-              }}
-            >
-              
-              <div className="w-full h-2/6 bg-white flex bg-gradient-album p-4 border-y-1 border-deep-grey shadow-2xl">
-                <img src={image.image[1].url} />
-                <h1 className="font-bold text-3xl p-5">
-                  {image.name} 
-                </h1>
+            <div className="h-screen w-5/6 m-12 mb-28 flex flex-col bg-black text-white overflow-y-scroll scrollbar-hide">
+              <div className="w-full h-64 bg-gradient-to-b from-green-500 to-black flex p-4 items-center">
+                <img
+                  src={image.image[1].url}
+                  alt={image.name}
+                  className="h-48 w-48 rounded-full mr-6"
+                />
+                <h1 className="font-bold text-5xl">{image.name}</h1>
               </div>
-              {musicInfo.slice(0, musicInfo.length).map((song, index) => (
-                <div
-                  className="w-5/6 bg-deep-grey flex items-center gap-8 p-4 m-5 cursor-pointer"
-                  key={song.id}
-                  onClick={() => play(song.id,song.name,song.image)}
-                >
-                  <h1 className="text-2xl w-12">#{index + 1}</h1>{" "}
-                  {/* Fixed width for index */}
-                  <img src={song.image} className="h-12" />{" "}
-                  {/* Keep image size fixed */}
-                  <h1 className="text-md flex-grow">{song.year}</h1>{" "}
-                  {/* Allow year to take remaining space */}
-                  <h1 className="text-md flex-grow">{song.name}</h1>
-                  <img
-                    src="https://cdn-icons-png.flaticon.com/128/9376/9376391.png"
-                    className="h-12"
-                  />{" "}
-                  {/* Keep image size fixed */}
-                </div>
-              ))}
-              <h1 className="text-2xl p-2 m-2">
-            Top <span className="text-red font-bold">Albums</span>
-            </h1>
-              {albuminfo.slice(0, albuminfo.length).map((song, index) => (
-                  <Link to="/innerAlbum">
-                <div
-                  className="w-5/6 bg-deep-grey flex items-center gap-8 p-4 m-5 cursor-pointer"
-                  key={song.aid}
-                  onClick={() => plays(song.aid)}
-                >
-                  <h1 className="text-2xl w-12">#{index + 1}</h1>{" "}
-                  {/* Fixed width for index */}
-                  <img src={song.aimage} className="h-12" />{" "}
-                  {/* Keep image size fixed */}
-                  <h1 className="text-md flex-grow">{song.ayear}</h1>{" "}
-                  {/* Allow year to take remaining space */}
-                  <h1 className="text-md flex-grow">{song.aname}</h1>
-                  <img
-                    src="https://cdn-icons-png.flaticon.com/128/9376/9376391.png"
-                    className="h-12"
-                  />{" "}
-                  {/* Keep image size fixed */}
-                </div>
-                </Link>
-              ))}
-              <div className="flex  mb-8">
-              
+
+              <div className="p-6">
+                <h2 className="text-3xl mb-4 font-bold">Top Songs</h2>
+                {musicInfo.map((song, index) => (
+                  <div
+                    className="flex items-center gap-8 py-4 bg-gray-800 rounded-lg mb-4 hover:bg-gray-700 cursor-pointer transition duration-200"
+                    key={song.id}
+                    onClick={() => play(song.id, song.name, song.image)}
+                  >
+                    <span className="text-xl w-12">#{index + 1}</span>
+                    <img src={song.image} alt={song.name} className="h-12 w-12 rounded-lg" />
+                    <div className="flex-grow">
+                      <h3 className="text-lg font-bold">{song.name}</h3>
+                      <p className="text-gray-400">{song.year}</p>
+                    </div>
+                    <img
+                      src="https://cdn-icons-png.flaticon.com/128/9376/9376391.png"
+                      alt="options"
+                      className="h-8"
+                    />
+                  </div>
+                ))}
+
+                <h2 className="text-3xl mt-6 mb-4 font-bold">Top Albums</h2>
+                {albuminfo.map((album, index) => (
+                  <Link to="/innerAlbum" key={album.aid}>
+                    <div
+                      className="flex items-center gap-8 py-4 bg-gray-800 rounded-lg mb-4 hover:bg-gray-700 cursor-pointer transition duration-200"
+                      onClick={() => plays(album.aid)}
+                    >
+                      <span className="text-xl w-12">#{index + 1}</span>
+                      <img
+                        src={album.aimage}
+                        alt={album.aname}
+                        className="h-12 w-12 rounded-lg"
+                      />
+                      <div className="flex-grow">
+                        <h3 className="text-lg font-bold">{album.aname}</h3>
+                        <p className="text-gray-400">{album.ayear}</p>
+                      </div>
+                      <img
+                        src="https://cdn-icons-png.flaticon.com/128/9376/9376391.png"
+                        alt="options"
+                        className="h-8"
+                      />
+                    </div>
+                  </Link>
+                ))}
               </div>
             </div>
           ) : (
-            <div
-              className="h-screen w-full   mb-24 flex flex-col bg-gradient-album border-1 border-deep-grey shadow-lg overflow-y"
-              style={{
-                overflowY: "scroll",
-                scrollbarWidth: "none",
-                msOverflowStyle: "none",
-              }}
-            >
-              <div className="w-full h-2/6 bg-white flex bg-gradient-album p-4 border-y-1 border-deep-grey shadow-2xl">
-                <img src={image.image[1].url} />
-                <h1 className="font-bold text-md p-5">
-                  {image.name} <span className="text-red">{image.language}</span>
-                </h1>
+            <div className="h-screen w-full mb-24 flex flex-col bg-black text-white overflow-y-scroll scrollbar-hide">
+              <div className="w-full h-64 bg-gradient-to-b from-green-500 to-black flex p-4 items-center">
+                <img
+                  src={image.image[1].url}
+                  alt={image.name}
+                  className="h-48 w-48 rounded-full mr-6"
+                />
+                <h1 className="font-bold text-4xl">{image.name}</h1>
               </div>
-              {musicInfo.slice(0, musicInfo.length).map((song, index) => (
-                <div
-                  className="w-5/6 bg-deep-grey flex items-center gap-8 p-4 m-5 cursor-pointer"
-                  key={song.id}
-                  onClick={() => play(song.id,song.name,song.image)}
-                >
-                  <p className="text-sm w-full">#{index + 1}</p>{" "}
-                  {/* Fixed width for index */}
-                  <img src={song.image} className="h-12" />{" "}
-                  {/* Keep image size fixed */}
-                  <p className="text-sm flex-grow">{song.year}</p>{" "}
-                  {/* Allow year to take remaining space */}
-                  <p className="text-sm flex-grow">{song.name}</p>
-               
-                  {/* Keep image size fixed */}
-                </div>
-              ))}
-               <h1 className="text-2xl p-2 m-2">
-            Top <span className="text-red font-bold">Albums</span>
-            </h1>
-              {albuminfo.slice(0, albuminfo.length).map((song, index) => (
-                  <Link to="/innerAlbum">
-                <div
-                  className="w-5/6 bg-deep-grey flex items-center gap-8 p-4 m-5 cursor-pointer"
-                  key={song.aid}
-                  onClick={() => plays(song.aid)}
-                >
-                  <p className="text-2xl w-12">#{index + 1}</p>{" "}
-                  {/* Fixed width for index */}
-                  <img src={song.aimage} className="h-12" />{" "}
-                  {/* Keep image size fixed */}
-                  <p className="text-md flex-grow">{song.ayear}</p>{" "}
-                  {/* Allow year to take remaining space */}
-                  <p className="text-md flex-grow">{song.aname}</p>
-                 {" "}
-                  {/* Keep image size fixed */}
-                </div>
-                </Link>
-              ))}
-              <div className="flex  ml-8  mb-36">
-              
+
+              <div className="p-6">
+                <h2 className="text-2xl mb-4 font-bold">Top Songs</h2>
+                {musicInfo.map((song, index) => (
+                  <div
+                    className="flex items-center gap-8 py-4 bg-gray-800 rounded-lg mb-4 hover:bg-gray-700 cursor-pointer transition duration-200"
+                    key={song.id}
+                    onClick={() => play(song.id, song.name, song.image)}
+                  >
+                    <span className="text-sm w-12">#{index + 1}</span>
+                    <img src={song.image} alt={song.name} className="h-12 w-12 rounded-lg" />
+                    <div className="flex-grow">
+                      <h3 className="text-md font-bold">{song.name}</h3>
+                      <p className="text-gray-400">{song.year}</p>
+                    </div>
+                  </div>
+                ))}
+
+                <h2 className="text-2xl mt-6 mb-4 font-bold">Top Albums</h2>
+                {albuminfo.map((album, index) => (
+                  <Link to="/innerAlbum" key={album.aid}>
+                    <div
+                      className="flex items-center gap-8 py-4 bg-gray-800 rounded-lg mb-4 hover:bg-gray-700 cursor-pointer transition duration-200"
+                      onClick={() => plays(album.aid)}
+                    >
+                      <span className="text-sm w-12">#{index + 1}</span>
+                      <img
+                        src={album.aimage}
+                        alt={album.aname}
+                        className="h-12 w-12 rounded-lg"
+                      />
+                      <div className="flex-grow">
+                        <h3 className="text-md font-bold">{album.aname}</h3>
+                        <p className="text-gray-400">{album.ayear}</p>
+                      </div>
+                    </div>
+                  </Link>
+                ))}
               </div>
             </div>
           )}
         </>
       ) : (
-        <span className="text-red text-3xl font-bold">Loading.....</span>
+        <span className="text-green-500 text-3xl font-bold">Loading...</span>
       )}
     </>
   );
 }
+
 export default Innerartist;

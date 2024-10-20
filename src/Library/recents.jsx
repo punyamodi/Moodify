@@ -9,6 +9,7 @@ function Recents() {
   const { setSongid } = useContext(Context);
   const [loading, setLoading] = useState(false);
   const localUser = JSON.parse(localStorage.getItem("Users"));
+
   useEffect(() => {
     const fetchLikes = async () => {
       try {
@@ -16,7 +17,6 @@ function Recents() {
 
         // If the number of items exceeds 100, delete the oldest item
         if (res.length > 100) {
-          // Sort by timestamp in ascending order (oldest first)
           res = res.sort((a, b) => a.timestamp - b.timestamp);
           const oldestSong = res[0]; // Get the oldest song
 
@@ -42,7 +42,6 @@ function Recents() {
     fetchLikes();
   }, []); // Empty dependency array ensures this runs once on mount
 
-
   const play = (id) => {
     localStorage.setItem("songid", id);
     setSongid(id);
@@ -66,94 +65,100 @@ function Recents() {
             <>
               {isAboveMedium ? (
                 <div
-                  className="h-screen w-5/6 m-12 mb-12 flex flex-col bg-gradient-album border-1 border-deep-grey shadow-lg overflow-y"
-                  style={{
-                    overflowY: "scroll",
-                    scrollbarWidth: "none",
-                    msOverflowStyle: "none",
-                  }}
+                  className="h-screen w-5/6 m-12 mb-12 flex flex-col bg-black text-white shadow-lg overflow-y-scroll scrollbar-hide"
                 >
-                  <div className="w-full h-2/6 bg-white flex bg-gradient-album p-4 border-y-1 border-deep-grey shadow-2xl">
-                    <img src="https://cdn-icons-png.flaticon.com/512/7462/7462205.png" />
-                    <h1 className="font-bold text-3xl p-5">
-                      Recent <span className="text-red">Songs</span>
-                    </h1>
+                  <div className="w-full h-64 bg-gradient-to-b from-green-500 to-black flex items-center p-4">
+                    <img
+                      src="https://cdn-icons-png.flaticon.com/512/7462/7462205.png"
+                      alt="Recents"
+                      className="h-48 w-48 rounded-lg shadow-md"
+                    />
+                    <div className="ml-5">
+                      <h1 className="font-bold text-5xl">Recent Songs</h1>
+                    </div>
                   </div>
 
-                  {localUser &&
-                    likes.map((song, index) => (
+                  <div className="flex flex-col p-6">
+                    {likes.map((song, index) => (
                       <div
-                        className="w-5/6 bg-deep-grey flex items-center gap-8 p-4 m-5 cursor-pointer"
+                        className="flex items-center gap-8 py-4 hover:bg-gray-800 rounded-lg cursor-pointer transition duration-200"
                         key={song.id}
                       >
-                        <h1 className="text-2xl w-12">#{index + 1}</h1>
+                        <span className="text-xl w-12">#{index + 1}</span>
                         <img
                           src={song.songUrl}
-                          className="h-12"
+                          className="h-12 w-12 rounded-lg object-cover"
+                          alt={song.songName}
                           onClick={() => play(song.songId)}
                         />
-                        <h1 className="text-md flex-grow">{song.songName}</h1>
-                        <h1
-                          className="text-blue text-2xl cursor-pointer"
+                        <div className="flex flex-grow justify-between">
+                          <h1 className="text-md font-bold">{song.songName}</h1>
+                        </div>
+                        <button
+                          className="text-red-500 text-xl cursor-pointer"
                           onClick={() => deleteRecent(song.id)}
                         >
-                          X
-                        </h1>
+                          Remove
+                        </button>
                       </div>
                     ))}
+                  </div>
 
-                  <div className="h-2/6 mb-24"></div>
+                  <div className="h-24"></div>
                 </div>
               ) : (
                 <div
-                  className="h-screen w-full mb-24 flex flex-col bg-gradient-album border-1 border-deep-grey shadow-lg overflow-y"
-                  style={{
-                    overflowY: "scroll",
-                    scrollbarWidth: "none",
-                    msOverflowStyle: "none",
-                  }}
+                  className="h-screen w-full mb-24 flex flex-col bg-black text-white shadow-lg overflow-y-scroll scrollbar-hide"
                 >
-                  <div className="w-full h-2/6 bg-white flex bg-gradient-album p-4 border-y-1 border-deep-grey shadow-2xl">
-                    <img src="https://cdn-icons-png.flaticon.com/512/7462/7462205.png" />
-                    <h1 className="font-bold text-2xl p-5">
-                      Recents <span className="text-red">Songs</span>
-                    </h1>
+                  <div className="w-full h-64 bg-gradient-to-b from-green-500 to-black flex items-center p-4">
+                    <img
+                      src="https://cdn-icons-png.flaticon.com/512/7462/7462205.png"
+                      alt="Recents"
+                      className="h-48 w-48 rounded-lg shadow-md"
+                    />
+                    <div className="ml-5">
+                      <h1 className="font-bold text-4xl">Recent Songs</h1>
+                    </div>
                   </div>
-                  {localUser &&
-                    likes.map((song, index) => (
+
+                  <div className="flex flex-col p-6">
+                    {likes.map((song, index) => (
                       <div
-                        className="w-5/6 bg-deep-grey flex items-center gap-8 p-4 m-5 cursor-pointer"
-                        key={song.songId}
+                        className="flex items-center gap-8 py-4 hover:bg-gray-800 rounded-lg cursor-pointer transition duration-200"
+                        key={song.id}
                       >
-                        <p className="text-sm w-full">#{index + 1}</p>
+                        <span className="text-sm w-8">#{index + 1}</span>
                         <img
                           src={song.songUrl}
-                          className="h-12"
+                          className="h-12 w-12 rounded-lg object-cover"
+                          alt={song.songName}
                           onClick={() => play(song.songId)}
                         />
-                        <p className="text-sm flex-grow">{song.songName}</p>
-                        <h1
-                          className="text-blue text-2xl cursor-pointer"
+                        <div className="flex flex-grow justify-between">
+                          <h1 className="text-sm font-bold">{song.songName}</h1>
+                        </div>
+                        <button
+                          className="text-red-500 text-lg cursor-pointer"
                           onClick={() => deleteRecent(song.id)}
                         >
-                          X
-                        </h1>
+                          Remove
+                        </button>
                       </div>
                     ))}
-                  <div className="h-80 mb-32"></div>
-                  
+                  </div>
+
+                  <div className="h-24"></div>
                 </div>
               )}
-                
             </>
           ) : (
-            <h1 className="text-red text-3xl font-bold">
+            <h1 className="text-green-500 text-3xl font-bold text-center mt-10">
               Login to view your Recents
             </h1>
           )}
         </>
       ) : (
-        <span className="text-red text-3xl font-bold">Loading.....</span>
+        <span className="text-green-500 text-3xl font-bold">Loading...</span>
       )}
     </>
   );

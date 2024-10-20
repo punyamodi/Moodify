@@ -1,243 +1,144 @@
+import { FaHome, FaSearch, FaMusic, FaHeart, FaUser, FaCompactDisc, FaSignOutAlt, FaClock } from "react-icons/fa"; // FontAwesome icons
 import useMediaQuery from "../useMedia";
-import artist from "../assets/artist.svg";
-import close from "../assets/close-icon.svg";
-import search from "../assets/searchicon.svg";
-import library from "../assets/library.svg";
-import discover from "../assets/discover.svg";
-import home from "../assets/home.svg";
-import albums from "../assets/album.svg";
-import liked from "../assets/liked.svg";
-import logout from "../assets/logout.svg";
-import recent from "../assets/recent.svg";
 import { auth } from "../Firebase/firebaseConfig";
-import { createUserWithEmailAndPassword,signOut,signInWithPopup,OAuthProvider, signInWithRedirect,updateProfile } from 'firebase/auth';
-import AudioPlayer from "../AudioPlayer/audioplayer";
 import { useContext } from "react";
 import { Context } from "../main";
 import { Link } from "react-router-dom";
+
 function Sidebar() {
   const isAboveMedium = useMediaQuery("(min-width: 1025px)");
   const localUser = JSON.parse(localStorage.getItem("Users"));
-  const selectedStyle = `text-red  `;
-  const {selected,setSelected}=useContext(Context)
-  const signout=async()=>{
+  const selectedStyle = `text-green-500 font-bold`;
+  const { selected, setSelected } = useContext(Context);
+
+  const signout = async () => {
     await auth.signOut(auth);
-      localStorage.removeItem("Users");
-      window.location.reload();
-     }
+    localStorage.removeItem("Users");
+    window.location.reload();
+  };
+
   return (
     <>
       {isAboveMedium ? (
-        <aside className="w-42 bg-deep-blue h-screen">
-          <h1 className="bg-gradient-rainbow text-transparent bg-clip-text text-2xl p-6 font-bold ">
-            MelodyMind
-          </h1>
-          <div className=" align-middle justify-center items-center p-8 hover:cursor-pointer">
-            <h1 className="text-red mb-4">Menu</h1>
+        <aside className="w-64 bg-black h-screen text-gray-400 font-sans text-lg"> {/* Text size increased */}
+          {/* Spotify-like Logo */}
+          <h1 className="text-white text-4xl p-6 font-bold">Moodify</h1> {/* Logo text size increased */}
+
+          {/* Menu Section */}
+          <div className="flex flex-col p-4">
             <Link to="/">
-            <div className="p-2 flex">
-              <img src={home} alt="search icon" className="mr-2" />
-              <h1
-                className={`${
-                  selected === "/" ? selectedStyle : "hover:text-red"
-                } text-2xl`}
+              <div className={`flex items-center p-2 mb-2 ${selected === "/" ? selectedStyle : "hover:text-white"} transition duration-200`}>
+                <FaHome className="mr-4 h-8 w-8" /> {/* Icon size increased */}
+                <span>Home</span>
+              </div>
+            </Link>
+
+            <Link to="/discover">
+              <div className={`flex items-center p-2 mb-2 ${selected === "/discover" ? selectedStyle : "hover:text-white"} transition duration-200`}>
+                <FaSearch className="mr-4 h-8 w-8" /> {/* Icon size increased */}
+                <span>Discover</span>
+              </div>
+            </Link>
+
+            <Link to="/albums">
+              <div className={`flex items-center p-2 mb-2 ${selected === "/albums" ? selectedStyle : "hover:text-white"} transition duration-200`}>
+                <FaCompactDisc className="mr-4 h-8 w-8" /> {/* Icon size increased */}
+                <span>Albums</span>
+              </div>
+            </Link>
+
+            <Link to="/artist">
+              <div className={`flex items-center p-2 mb-2 ${selected === "/artist" ? selectedStyle : "hover:text-white"} transition duration-200`}>
+                <FaUser className="mr-4 h-8 w-8" /> {/* Icon size increased */}
+                <span>Artists</span>
+              </div>
+            </Link>
+          </div>
+
+          {/* Library Section */}
+          <div className="flex flex-col p-4 mt-4">
+            <h2 className="text-gray-500 uppercase tracking-wide mb-4">Your Library</h2>
+
+            <Link to="/recently">
+              <div className={`flex items-center p-2 mb-2 ${selected === "/recently" ? selectedStyle : "hover:text-white"} transition duration-200`}>
+                <FaClock className="mr-4 h-8 w-8" /> {/* Icon size increased */}
+                <span>Recently Played</span>
+              </div>
+            </Link>
+
+            <Link to="/liked">
+              <div className={`flex items-center p-2 mb-2 ${selected === "/liked" ? selectedStyle : "hover:text-white"} transition duration-200`}>
+                <FaHeart className="mr-4 h-8 w-8" /> {/* Icon size increased */}
+                <span>Liked Songs</span>
+              </div>
+            </Link>
+          </div>
+
+          {/* General Section */}
+          {localUser && (
+            <div className="flex flex-col p-4 mt-4">
+              <h2 className="text-gray-500 uppercase tracking-wide mb-4">General</h2>
+              <div className="flex items-center p-2 mb-2 hover:text-white cursor-pointer transition duration-200" onClick={signout}>
+                <FaSignOutAlt className="mr-4 h-8 w-8" /> {/* Icon size increased */}
+                <span>Logout</span>
+              </div>
+            </div>
+          )}
+        </aside>
+      ) : (
+        // Bottom Navigation for mobile view
+        <footer className="fixed bottom-0 w-full bg-black h-24 text-gray-400 z-40 font-sans text-lg"> {/* Increased height and text size */}
+          <nav className="flex justify-around items-center h-full">
+            <Link to="/">
+              <div
                 onClick={() => {
                   localStorage.setItem("selected", "/");
                   setSelected("/");
                 }}
+                className="text-center"
               >
-                Home
-              </h1>
-            </div>
+                <FaHome className="mx-auto mb-1 h-8 w-8" /> {/* Icon size increased */}
+                <span className={`${selected === "/" ? "text-white" : "hover:text-white"} transition duration-200`}>Home</span>
+              </div>
             </Link>
+
             <Link to="/discover">
-            <div className="p-2 flex">
-              <img src={discover} alt="search icon" className="mr-2" />
-              <h1
-                className={`${
-                  selected === "/discover" ? selectedStyle : "hover:text-red"
-                } text-2xl`}
+              <div
                 onClick={() => {
                   localStorage.setItem("selected", "/discover");
                   setSelected("/discover");
                 }}
+                className="text-center"
               >
-                Discover
-              </h1>
-            </div>
+                <FaSearch className="mx-auto mb-1 h-8 w-8" /> {/* Icon size increased */}
+                <span className={`${selected === "/discover" ? "text-white" : "hover:text-white"} transition duration-200`}>Discover</span>
+              </div>
             </Link>
+
             <Link to="/albums">
-            <div className="p-2 flex">
-              <img src={albums} alt="search icon" className="mr-2" />
-              <h1
-                className={`${
-                  selected === "/albums" ? selectedStyle : "hover:text-red"
-                } text-2xl`}
+              <div
                 onClick={() => {
                   localStorage.setItem("selected", "/albums");
                   setSelected("/albums");
                 }}
+                className="text-center"
               >
-                Albums
-              </h1>
-            </div>
+                <FaCompactDisc className="mx-auto mb-1 h-8 w-8" /> {/* Icon size increased */}
+                <span className={`${selected === "/albums" ? "text-white" : "hover:text-white"} transition duration-200`}>Albums</span>
+              </div>
             </Link>
-            <Link to="/artist">
-            <div className="p-2 flex">
-              <img src={artist} alt="search icon" className="mr-2" />
-              <h1
-                className={`${
-                  selected === "/artist" ? selectedStyle : "hover:text-red"
-                } text-2xl`}
-                onClick={() => {
-                  localStorage.setItem("selected", "/artist");
-                  setSelected("/artist");
-                }}
-              >
-                Artist
-              </h1>
-            </div>
-            </Link>
-          
-            <h1 className="text-red mb-4 mt-4">Library</h1>
-            <Link to="/recently">
-            <div className="p-2 flex">
-              <img src={recent} alt="search icon" className="mr-2" />
-              <h1
-                className={`${
-                  selected === "/recently" ? selectedStyle : "hover:text-red"
-                } text-2xl`}
-                onClick={() => {
-                  localStorage.setItem("selected", "/recently");
-                  setSelected("/recently");
-                }}
-              >
-                Recently
-              </h1>
-            </div>
-            </Link>
+
             <Link to="/liked">
-            <div className="p-2 flex">
-              <img src={liked} alt="search icon" className="mr-2" />
-              <h1
-                className={`${
-                  selected === "/liked" ? selectedStyle : "hover:text-red"
-                } text-2xl`}
+              <div
                 onClick={() => {
                   localStorage.setItem("selected", "/liked");
                   setSelected("/liked");
                 }}
+                className="text-center"
               >
-                Liked
-              </h1>
-            </div>
-          </Link>
-           
-            {localUser && (
-              <>
-               <h1 className="text-red mb-4 mt-2">General</h1>
-            <div className="p-2 flex" onClick={signout}>
-              <img src={logout} alt="search icon" className="mr-2" />
-              <h1
-                className={`${
-                  selected === "logout" ? selectedStyle : "hover:text-red"
-                } text-2xl`}
-                >
-                Logout
-              </h1>
-            </div>
-            </>
-            )}
-            
-            </div>
-        </aside>
-      ) : (
-        <footer className="fixed bottom-0 w-full bg-deep-blue h-20 z-40">
-          <nav className="flex gap-8 p-2 items-center justify-center">
-            <Link to="/">
-            <div
-              onClick={() => {
-                localStorage.setItem("selected", "/");
-                setSelected("/");
-              }}
-            >
-              <img src={home} alt="search icon" className="p-2" />
-              <h2
-                className={`${
-                  selected === "/" ? selectedStyle : "hover:text-red"
-                } `}
-              >
-                Home
-              </h2>
-            </div>
-            </Link>
-            <Link to="/discover">
-            <div
-              onClick={() => {
-                localStorage.setItem("selected", "/discover");
-                setSelected("/discover");
-              }}
-            >
-              <img src={discover} alt="search icon" className="p-2" />
-              <h2
-                className={`${
-                  selected === "/discover" ? selectedStyle : "hover:text-red"
-                } `}
-              >
-                Discover
-              </h2>
-            </div>
-            </Link>
-            <Link to="/albums">
-            <div
-              onClick={() => {
-                localStorage.setItem("selected", "/albums");
-                setSelected("/albums");
-              }}
-            >
-              <img src={albums} alt="search icon" className="p-2 " />
-              <h2
-                className={`${
-                  selected === "/albums" ? selectedStyle : "hover:text-red"
-                } `}
-              >
-                Albums
-              </h2>
-            </div>
-            </Link>
-            <Link to="/liked">
-            <div
-              onClick={() => {
-                localStorage.setItem("selected", "/liked");
-                setSelected("/liked");
-              }}
-            >
-              <img src={library} alt="search icon" className="p-2" />
-              <h2
-                className={`${
-                  selected === "/liked" ? selectedStyle : "hover:text-red"
-                } `}
-              >
-                Library
-              </h2>
-            </div>
-            </Link>
-            <Link to="/search">
-            <div
-              onClick={() => {
-                localStorage.setItem("selected", "/search");
-                setSelected("/search");
-              }}
-            >
-              <img src={search} alt="search icon" className="p-2" />
-              <h2
-                className={`${
-                  selected === "/search" ? selectedStyle : "hover:text-red"
-                } `}
-              >
-                search
-              </h2>
-            </div>
+                <FaHeart className="mx-auto mb-1 h-8 w-8" /> {/* Icon size increased */}
+                <span className={`${selected === "/liked" ? "text-white" : "hover:text-white"} transition duration-200`}>Library</span>
+              </div>
             </Link>
           </nav>
         </footer>
@@ -245,4 +146,5 @@ function Sidebar() {
     </>
   );
 }
+
 export default Sidebar;

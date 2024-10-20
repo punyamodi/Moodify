@@ -6,7 +6,7 @@ import { Context } from "../main";
 import useMediaQuery from "../useMedia";
 import { MelodyMusicsongs } from "../saavnapi";
 import he from "he";
-import  {addRecents} from '../Firebase/database';
+import { addRecents } from "../Firebase/database";
 
 function Topsongs({ names }) {
   const { setSongid } = useContext(Context);
@@ -25,7 +25,7 @@ function Topsongs({ names }) {
     const fetchData = async () => {
       try {
         const res = await MelodyMusicsongs(names);
-    
+
         if (res) {
           setMusicInfo(
             res.map((song) => ({
@@ -44,19 +44,18 @@ function Topsongs({ names }) {
     fetchData();
   }, [names]);
 
-  const play = async(id,name,image) => {
+  const play = async (id, name, image) => {
     localStorage.setItem("songid", id);
     setSongid(id);
-    const user=JSON.parse(localStorage.getItem("Users"));
-   
-    if(user){
-    try{
-     await addRecents(user.uid,id,name,image);
+    const user = JSON.parse(localStorage.getItem("Users"));
+
+    if (user) {
+      try {
+        await addRecents(user.uid, id, name, image);
+      } catch (error) {
+        console.log(error);
+      }
     }
-    catch(error){
-      console.log(error);
-    }
-  }
   };
 
   return (
@@ -64,64 +63,66 @@ function Topsongs({ names }) {
       {!loading ? (
         <>
           {isAboveMedium ? (
-            <div className="flex p-4 flex-3 gap-5 mb-4 cursor-pointer">
-                <div className="flex flex-wrap">
+            <div className="flex flex-wrap gap-6 p-4 bg-black text-white">
               {musicInfo.slice(0, limit).map((song) => (
                 <div
-                  className="h-68 border-1 bg-deep-grey w-56 text-white mr-5 border-0 rounded-md p-4 mt-5"
+                  className="w-56 h-68 bg-gray-800 p-4 rounded-lg hover:scale-105 transform transition-all duration-200 cursor-pointer"
                   key={song.id}
-                  onClick={() => play(song.id,song.name,song.image)} 
+                  onClick={() => play(song.id, song.name, song.image)}
                 >
                   <img
-                    src={song.image} // Assuming song.image is an object with a 'url' property
+                    src={song.image}
                     alt={song.name}
-                    className="h-48 w-56 object-cover border-0 rounded-md"
+                    className="w-full h-48 object-cover rounded-lg mb-2"
                   />
-                  <h1 className="text-center font-bold text-white">
+                  <h1 className="text-center font-bold text-white truncate">
                     {song.name}
                   </h1>
                 </div>
               ))}
               {musicInfo.length > 5 && limit === 5 ? (
-                <button onClick={expandResults}>
-                  <img src={viewall} alt="View All" />
-                  <h1 className="font-bold">View All</h1>
+                <button
+                  onClick={expandResults}
+                  className="flex flex-col items-center justify-center text-white font-bold"
+                >
+                  <img src={viewall} alt="View All" className="mb-2" />
+                  <h1 className="text-green-500">View All</h1>
                 </button>
               ) : (
-                <button onClick={() => setLimit(5)}>
-                  <img src={viewclose} alt="Close" />
-                  <h1 className="font-bold">Close</h1>
+                <button
+                  onClick={() => setLimit(5)}
+                  className="flex flex-col items-center justify-center text-white font-bold"
+                >
+                  <img src={viewclose} alt="Close" className="mb-2" />
+                  <h1 className="text-green-500">Close</h1>
                 </button>
               )}
-              </div>
             </div>
           ) : (
-           
-      <div className="flex overflow-x-scroll overflow-y-hidden space-x-4 p-2">
-        {musicInfo.map((song) => (
-          <div
-            className="flex flex-col items-center pb-6"
-            key={song.id}
-            onClick={() => play(song.id,song.name,song.image)}
-          >
-            <div className="h-28 border-1 p-2 bg-deep-grey w-28 text-white border-0 rounded-md mt-2">
-              <img
-                src={song.image}
-                alt={song.name}
-                className="h-24 w-24 object-cover mb-2 rounded-md"
-              />
-              <h1 className="text-center font-bold text-white text-sm truncate">
-                {song.name}
-              </h1>
+            <div className="flex overflow-x-scroll overflow-y-hidden space-x-4 p-2 bg-black">
+              {musicInfo.map((song) => (
+                <div
+                  className="flex flex-col items-center pb-6 cursor-pointer"
+                  key={song.id}
+                  onClick={() => play(song.id, song.name, song.image)}
+                >
+                  <div className="h-28 w-28 bg-gray-800 p-2 rounded-lg hover:scale-105 transform transition-all duration-200">
+                    <img
+                      src={song.image}
+                      alt={song.name}
+                      className="h-24 w-24 object-cover rounded-lg mb-2"
+                    />
+                    <h1 className="text-center font-bold text-white text-sm truncate">
+                      {song.name}
+                    </h1>
+                  </div>
+                </div>
+              ))}
             </div>
-          </div>
-        ))}
-      </div>
-
           )}
         </>
       ) : (
-        <span className="text-red text-3xl font-bold">Loading.....</span>
+        <span className="text-green-500 text-3xl font-bold">Loading...</span>
       )}
     </>
   );

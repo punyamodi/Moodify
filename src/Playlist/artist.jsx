@@ -6,11 +6,12 @@ import { Context } from "../main";
 import useMediaQuery from "../useMedia";
 import { artist } from "../saavnapi";
 import { Link } from "react-router-dom";
+
 function Artist({ names }) {
-  const { setSinger, page, Viewall, setSelected } = useContext(Context);
+  const { setSinger, setSelected } = useContext(Context);
   const [musicInfo, setMusicInfo] = useState([]);
   const [limit, setLimit] = useState(5);
-  const isAboveMedium = useMediaQuery("(min-width:1025px)");
+  const isAboveMedium = useMediaQuery("(min-width: 1025px)");
   const [loading, setLoading] = useState(true);
 
   // Function to handle expanding to show more results
@@ -52,84 +53,74 @@ function Artist({ names }) {
   return (
     <>
       {!loading ? (
-        // Wrap your conditional rendering in a container div or fragment
         <div>
           {isAboveMedium ? (
-            <>
-              <div className="flex p-4 flex-3 gap-5 mb-4 cursor-pointer">
-                <div className="flex flex-wrap">
-                  {musicInfo.slice(0, limit).map((song) => (
-                    <Link to="/innerartist">
-                    <div
-                      className="h-68 border-1 bg-transparent w-56 text-white mr-5 border-0 rounded-md p-4 mt-5"
-                      key={song.id}
-                      onClick={() => play(song.id)}
-                    >
-                      {song.image ? (
-                        <img
-                          src={song.image}
-                          alt={song.name}
-                          className="h-48 w-56 object-cover border-0 rounded-full"
-                        />
-                      
-                      ) : (
-                        <div className="h-48 w-56 flex items-center justify-center bg-gray-200 text-gray-400">
-                          Image Not Available
-                        </div>
-                      )}
-                      <h1 className="text-center font-bold text-white">
-                        {song.name}
-                      </h1>
-                    </div>
-                    </Link>
-                  ))}
-                  {musicInfo.length > 5 && limit === 5 ? (
-                    <button onClick={expandResults}>
-                      <img src={viewall} alt="View All" />
-                      <h1 className="font-bold"> View All</h1>
-                    </button>
-                  ) : (
-                    <button onClick={() => setLimit(5)}>
-                      <img src={viewclose} alt="Close" />
-                      <h1 className="font-bold">Close</h1>
-                    </button>
-                  )}
-                </div>
-              </div>
-            </>
-          ) : (
-            <div className="flex p-4 overflow-x-scroll overflow-y-hidden space-x-4">
-              {musicInfo.slice(0, musicInfo.length).map((song) => (
-                <Link to="/innerartist">
-                <div
-                  className="flex flex-col items-center pb-4"
-                  key={song.id}
-                  onClick={() => play(song.id)}
-                >
-                  <div className="h-28 border-1 bg-transparent w-28 text-white border-0 rounded-md mt-2">
+            <div className="flex p-4 flex-wrap gap-6 mb-4 cursor-pointer">
+              {musicInfo.slice(0, limit).map((song) => (
+                <Link to="/innerartist" key={song.id}>
+                  <div
+                    className="bg-gray-800 text-white rounded-lg p-4 hover:bg-gray-700 transition duration-200"
+                    onClick={() => play(song.id)}
+                  >
                     {song.image ? (
                       <img
                         src={song.image}
                         alt={song.name}
-                        className="h-24 w-24 object-cover rounded-full"
+                        className="h-48 w-48 object-cover rounded-full mb-4"
                       />
                     ) : (
-                      <div className="h-20 w-20 flex items-center justify-center bg-gray-200 text-gray-400">
+                      <div className="h-48 w-48 flex items-center justify-center bg-gray-200 text-gray-400 rounded-full">
                         Image Not Available
                       </div>
                     )}
-                    <p className="text-center font-bold text-white text-sm truncate">
+                    <h1 className="text-center font-bold">{song.name}</h1>
+                  </div>
+                </Link>
+              ))}
+              {musicInfo.length > 5 && limit === 5 ? (
+                <button onClick={expandResults} className="text-green-500 font-bold mt-4">
+                  <img src={viewall} alt="View All" className="mb-2" />
+                  View All
+                </button>
+              ) : (
+                <button onClick={() => setLimit(5)} className="text-green-500 font-bold mt-4">
+                  <img src={viewclose} alt="Close" className="mb-2" />
+                  Close
+                </button>
+              )}
+            </div>
+          ) : (
+            <div className="flex p-4 overflow-x-scroll space-x-4">
+              {musicInfo.map((song) => (
+                <Link to="/innerartist" key={song.id}>
+                  <div
+                    className="flex flex-col items-center pb-4 cursor-pointer"
+                    onClick={() => play(song.id)}
+                  >
+                    <div className="h-28 w-28 bg-gray-800 text-white rounded-full flex items-center justify-center">
+                      {song.image ? (
+                        <img
+                          src={song.image}
+                          alt={song.name}
+                          className="h-24 w-24 object-cover rounded-full"
+                        />
+                      ) : (
+                        <div className="h-24 w-24 bg-gray-200 text-gray-400 rounded-full flex items-center justify-center">
+                          Image Not Available
+                        </div>
+                      )}
+                    </div>
+                    <p className="text-center font-bold text-white text-sm truncate mt-2">
                       {song.name}
                     </p>
                   </div>
-                </div>
-               </Link>
+                </Link>
               ))}
             </div>
           )}
         </div>
       ) : (
-        <span className="text-red text-3xl font-bold">Loading.....</span>
+        <span className="text-green-500 text-3xl font-bold">Loading.....</span>
       )}
     </>
   );

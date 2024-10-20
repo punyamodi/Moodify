@@ -1,102 +1,112 @@
-import React from 'react';
-import { useForm } from "react-hook-form";
-import linkedin from './assets/linkedin.png';
-import github from './assets/github.png';
-import gmail from './assets/gmail.png';
-import contact from "./assets/contact.png";
-import useMediaQuery from './useMedia';
+import img from "../src/assets/music icon2.png";
+import useMediaQuery from "./useMedia";
 import bgimage from "../src/assets/7tqQ0e.jpg";
+
 const mystyle = {
-    bg1: {
-      backgroundImage: `url(${bgimage})`,
-      backgroundSize: "cover",
-      backgroundPosition: "center",
-      objectFit: "cover",
-      height: "100vh",
-    },
-  };
-export default function ContactUs() {
-  const { register, handleSubmit, trigger, formState: { errors } } = useForm();
- const isAboveMedium = useMediaQuery("(min-width: 768px)");
-  const onSubmit = async (data, e) => {
-    const isValid = await trigger();
-    if (!isValid) {
-      e.preventDefault();
-    }
-  };
+  bg1: {
+    backgroundImage: `url(${bgimage})`,
+    backgroundSize: "cover",
+    backgroundPosition: "center",
+    height: "100vh",
+  },
+};
+
+export default function AboutUs() {
+  const isAboveMedium = useMediaQuery("(min-width: 768px)");
 
   return (
-    <div  style={mystyle.bg1}>{
-    isAboveMedium ? (
-     <div className='h-screen w-full flex justify-center gap-12 mt-24 '>
-          <section className='w-1/3 ml-16'>
-           <img src={contact} alt="contact" className="hover:filter hover:saturate-200 transition duration-500 mb-48"/>
-          </section>
-          <section className='w-2/3 flex-col'>
-          <h1 className='text-2xl text-yellow font-bold ml-16'>CONTACT US</h1>
-          <form target="_blank" onSubmit={onSubmit} method="post" action="https://formspree.io/f/mgegrqwy"> 
-          <input type='text' placeholder='Name' className='w-1/2 h-12 mt-8 ml-16 bg-blue placeholder:text-deep-blue p-2' {...register("name", { required: true })} />
-          <input type='email' placeholder='Email' className='w-1/2 h-12 mt-8 ml-16 bg-blue placeholder:text-deep-blue p-2' {...register("email", { required: true })} />
-        <textarea placeholder='Message' className='w-1/2 h-32 mt-8 ml-16 bg-blue placeholder:text-deep-blue p-2' {...register("message", { required: true })} />
-        <button type='submit' className='w-1/2 h-12 mt-8 ml-16  bg-yellow text-black'>Submit</button>
-        </form>
-        <div className="flex justify-start  my-10 gap-7 mx-24">
-                <a className="hover:opacity-50 transition duration-500" href="https://www.linkedin.com/in/imranpasha636/" target="_blank" rel="noreferrer">
-                <img src={linkedin} alt="linkedin"/>
-                </a>
-                <a className="hover:opacity-50 transition duration-500" href="https://github.com/powerstone666" target="_blank" rel="noreferrer">
-                <img src={github} alt="github" className="h-8"/>
-                </a>
-                <a className="hover:opacity-50 transition duration-500" href="https://www.geeksforgeeks.org/user/powerstone666" target="_blank" rel="noreferrer">
-                <img src="https://media.geeksforgeeks.org/wp-content/uploads/20210628182253/gfglogo.png" alt="geekforgeeks" className="h-8"/>
-                </a>
-                <a className="hover:opacity-50 transition duration-500" href="https://leetcode.com/powerstone666/" target="_blank" rel="noreferrer">
-                <img src="https://cdn.iconscout.com/icon/free/png-512/leetcode-3628885-3030025.png" alt="leetcode" className="h-8"/>
-                </a>
-                <a className="hover:opacity-50 transition duration-500" href="mailto:imranpasha8225@gmail.com" target="_blank" rel="noreferrer">
-                <img src={gmail} alt="gmail" className="h-8"/>
-                </a>
-        </div>
-          </section>
-     </div>
-    ) : (
-        <div className='h-screen w-full  mt-18 ' style={{...mystyle.bg1,overflowY:"scroll"}}>
-          <section className='h-1/3 ml-12 p-4'>
-           <img src={contact} alt="contact" className="hover:filter hover:saturate-200 transition duration-500 h-full "/>
-          </section>
-          <section className='h-2/3 flex-col'>
-          <h1 className='text-2xl text-yellow font-bold ml-16'>CONTACT US</h1>
-          <form target="_blank" onSubmit={onSubmit} method="post" action="https://formspree.io/f/mgegrqwy"> 
-          <input type='text' placeholder='Name' className='w-1/2 h-12 mt-8 ml-16 bg-blue placeholder:text-deep-blue p-2' {...register("name", { required: true })} />
-          <input type='email' placeholder='Email' className='w-1/2 h-12 mt-8 ml-16 bg-blue placeholder:text-deep-blue p-2' {...register("email", { required: true })} />
-        <textarea placeholder='Message' className='w-1/2 h-32 mt-8 ml-16 bg-blue placeholder:text-deep-blue p-2' {...register("message", { required: true })} />
-        <button type='submit' className='w-1/2 h-12 mt-4 ml-16  bg-yellow text-black'>Submit</button>
-        </form>
-        <div className="flex justify-start  my-8 gap-7 mx-24">
-                <a className="hover:opacity-50 transition duration-500" href="https://www.linkedin.com/in/imranpasha636/" target="_blank" rel="noreferrer">
-                <img src={linkedin} alt="linkedin" className='w-18 h-8'/>
-                </a>
-                <a className="hover:opacity-50 transition duration-500" href="https://github.com/powerstone666" target="_blank" rel="noreferrer">
-                <img src={github} alt="github" className='w-18 h-8'/>
-                </a>
-                <a className="hover:opacity-50 transition duration-500" href="https://www.geeksforgeeks.org/user/powerstone666" target="_blank" rel="noreferrer">
-                <img src="https://media.geeksforgeeks.org/wp-content/uploads/20210628182253/gfglogo.png" alt="geekforgeeks" className='w-18 h-8'/>
-                </a>
-                <a className="hover:opacity-50 transition duration-500" href="https://leetcode.com/powerstone666/" target="_blank" rel="noreferrer">
-                <img src="https://cdn.iconscout.com/icon/free/png-512/leetcode-3628885-3030025.png" alt="leetcode" className='w-18 h-8'/>
-                </a>
-                <a className="hover:opacity-50 transition duration-500" href="mailto:imranpasha8225@gmail.com" target="_blank" rel="noreferrer">
-                <img src={gmail} alt="gmail" className='w-18 h-8' />
-                </a>
-        </div>
-          </section>
-          <section className='h-72'>
+    <>
+      {isAboveMedium ? (
+        <div
+          className="bg-black text-white p-8 h-screen flex items-center justify-center"
+          style={{ ...mystyle.bg1, overflowY: "scroll" }}
+        >
+          <div className="max-w-3xl mx-auto bg-opacity-80 bg-gray-900 p-10 rounded-lg shadow-lg">
+            <h2 className="text-4xl font-bold mb-6 text-green-500">About Us</h2>
+            <p className="mb-6 text-lg leading-relaxed">
+              Welcome to <span className="font-bold text-green-500">MelodyMinds</span>, where every beat matters. At MelodyMinds, we believe music is more than just sound – it’s an experience, a journey, and a way to connect with the world. We’re passionate about bringing the joy of music to your fingertips, making every note count and every playlist unforgettable.
+            </p>
 
-          </section>
-     </div>
-      
-    )
-}
-    </div>
+            <h2 className="text-4xl font-bold mb-6 text-green-500">Our Mission</h2>
+            <p className="mb-6 text-lg leading-relaxed">
+              Our mission is to empower music lovers by providing a platform that delivers exceptional sound quality, innovative features, and an unparalleled user experience. We strive to be the go-to app for all your music needs, making it easy for you to explore, enjoy, and share your favorite songs.
+            </p>
+
+            <div className="flex items-center mb-6">
+              <img
+                src={img}
+                alt="not found"
+                className="w-16 h-16 bg-green-500 p-2 rounded-full mr-4 border-2 border-gray-800 shadow-lg"
+              />
+              <p className="text-lg">
+                Our Music App is your ultimate destination for discovering and enjoying music!
+              </p>
+            </div>
+
+            <h2 className="text-3xl font-bold text-green-500 mb-4">Join Our Community</h2>
+            <p className="mb-4 text-lg leading-relaxed">
+              We’re more than just an app – we’re a community of music enthusiasts who share a common passion. Connect with us on social media, share your playlists, and join the conversation. We’re excited to have you on this musical journey with us.
+            </p>
+
+            <div className="flex mt-6 items-center justify-center gap-7">
+              <a href="#" className="mr-4">
+                <i className="fa-brands fa-facebook text-4xl hover:text-green-500 transition duration-300"></i>
+              </a>
+              <a href="#">
+                <i className="fa-brands fa-instagram text-4xl hover:text-green-500 transition duration-300"></i>
+              </a>
+              <a href="#">
+                <i className="fa-brands fa-linkedin text-4xl hover:text-green-500 transition duration-300"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+      ) : (
+        <div
+          className="bg-black text-white p-8 h-screen flex items-center justify-center"
+          style={{ ...mystyle.bg1, overflowY: "scroll" }}
+        >
+          <div className="max-w-xl mx-auto bg-opacity-80 bg-gray-900 p-8 rounded-lg shadow-lg">
+            <h2 className="text-3xl font-bold mb-6 text-green-500">About Us</h2>
+            <p className="mb-6 text-md leading-relaxed">
+              Welcome to <span className="font-bold text-green-500">MelodyMinds</span>, where every beat matters. At MelodyMinds, we believe music is more than just sound – it’s an experience, a journey, and a way to connect with the world. We’re passionate about bringing the joy of music to your fingertips.
+            </p>
+
+            <h2 className="text-3xl font-bold mb-6 text-green-500">Our Mission</h2>
+            <p className="mb-6 text-md leading-relaxed">
+              Our mission is to empower music lovers by providing a platform that delivers exceptional sound quality, innovative features, and an unparalleled user experience.
+            </p>
+
+            <div className="flex items-center mb-6">
+              <img
+                src={img}
+                alt="not found"
+                className="w-12 h-12 bg-green-500 p-2 rounded-full mr-4 border-2 border-gray-800 shadow-lg"
+              />
+              <p className="text-md">
+                Our Music App is your ultimate destination for discovering and enjoying music!
+              </p>
+            </div>
+
+            <h2 className="text-2xl font-bold text-green-500 mb-4">Join Our Community</h2>
+            <p className="mb-4 text-md">
+              We’re more than just an app – we’re a community of music enthusiasts who share a common passion. Connect with us on social media, share your playlists, and join the conversation.
+            </p>
+
+            <div className="flex mt-6 items-center justify-center gap-7">
+              <a href="#" className="mr-4">
+                <i className="fa-brands fa-facebook text-3xl hover:text-green-500 transition duration-300"></i>
+              </a>
+              <a href="#">
+                <i className="fa-brands fa-instagram text-3xl hover:text-green-500 transition duration-300"></i>
+              </a>
+              <a href="#">
+                <i className="fa-brands fa-linkedin text-3xl hover:text-green-500 transition duration-300"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
   );
 }

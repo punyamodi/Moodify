@@ -1,28 +1,20 @@
-import axios from "axios";
-import viewall from "../assets/viewall.svg";
-import viewclose from "../assets/viewclose.svg";
-import React, { useContext } from "react";
-import { useState, useEffect } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import { Context } from "../main";
 import useMediaQuery from "../useMedia";
 import { artist } from "../saavnapi";
 import Home from "../Home/home";
 import { Link } from "react-router-dom";
+
 function ArtistPage({ names }) {
-  const { setSinger,page,Viewall,setSelected } = useContext(Context);
+  const { setSinger, setSelected } = useContext(Context);
   const [musicInfo, setMusicInfo] = useState([]);
-  const [limit, setLimit] = useState(5);
-  const isAboveMedium = useMediaQuery("(min-width:768px)");
   const [loading, setLoading] = useState(true);
-  // Function to handle expanding to show more results
-  const expandResults = () => {
-    setLimit(musicInfo.length);
-  };
+  const isAboveMedium = useMediaQuery("(min-width:768px)");
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res=await artist();
+        const res = await artist();
 
         setMusicInfo(
           res.data.data.results.map((song) => ({
@@ -43,55 +35,43 @@ function ArtistPage({ names }) {
   const play = (id) => {
     localStorage.setItem("singer", id);
     setSinger(id);
-    
     localStorage.setItem("selected", "/artist");
-           setSelected("/artist");
+    setSelected("/artist");
   };
 
   return (
     <>
-    {isAboveMedium ?(
-    <div
-    className="overflow-y-auto h-screen w-screen mb-12"
-    style={{ overflowX: "scroll", minWidth: "100%" }}
-  >
-    <div className="flex p-4 flex-3 gap-5 mb-12 cursor-pointer " >
-      {!loading ? (
-        <div className="flex flex-wrap">
-          
-            <>
-              {musicInfo.slice(0, musicInfo.length).map((song) => (
-                <Link to="/innerartist">
-                <div
-                  className="h-68 border-1 bg-transparent w-56 text-white mr-5 border-0 rounded-md p-4 mt-5"
-                  key={song.id}
-                  onClick={() => play(song.id)}
-                >
-                  <img
-                    src={song.image.url}
-                    alt={song.title}
-                    className="h-48 w-56 object-cover border-0 rounded-full"
-                  />
-                  <h1 className="text-center font-bold text-white">
-                    {song.name}
-                  </h1>
-                </div>
-                </Link>
-              ))}
-            
-            </>
+      {isAboveMedium ? (
+        <div className="overflow-y-auto h-screen w-screen mb-12 bg-black text-white">
+          <div className="flex p-4 gap-5 mb-12 cursor-pointer flex-wrap justify-center">
+            {!loading ? (
+              <>
+                {musicInfo.map((song) => (
+                  <Link to="/innerartist" key={song.id}>
+                    <div
+                      className="h-68 w-56 bg-gray-800 rounded-lg p-4 mt-5 hover:bg-gray-700 transition duration-200"
+                      onClick={() => play(song.id)}
+                    >
+                      <img
+                        src={song.image.url}
+                        alt={song.name}
+                        className="h-48 w-48 object-cover rounded-full mb-4 mx-auto"
+                      />
+                      <h1 className="text-center font-bold text-white">
+                        {song.name}
+                      </h1>
+                    </div>
+                  </Link>
+                ))}
+              </>
+            ) : (
+              <span className="text-green-500 text-3xl font-bold">Loading...</span>
+            )}
+          </div>
         </div>
       ) : (
-        <span className="text-red text-3xl font-bold">Loading.....</span>
+        <Home />
       )}
-      <div className="h-2/6"> 
-
-      </div>
-      </div>
-    </div>
-    ):(
-        <Home/>
-    )}
     </>
   );
 }

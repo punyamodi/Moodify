@@ -1,22 +1,21 @@
-import axios from "axios";
-import viewall from "../assets/viewall.svg";
-import viewclose from "../assets/viewclose.svg";
-import React, { useContext } from "react";
-import { useState, useEffect } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import { Context } from "../main";
 import useMediaQuery from "../useMedia";
 import { MelodyMusicsongs } from "../saavnapi";
 import he from "he";
+
 function Trending({ names }) {
   const { setSongid } = useContext(Context);
   const [musicInfo, setMusicInfo] = useState([]);
   const [limit, setLimit] = useState(5);
   const isAboveMedium = useMediaQuery("(min-width:768px)");
   const [loading, setLoading] = useState(true);
+
   // Function to handle expanding to show more results
   const expandResults = () => {
     setLimit(musicInfo.length);
   };
+
   const formatDuration = (durationInSeconds) => {
     const minutes = Math.floor(durationInSeconds / 60);
     const seconds = durationInSeconds % 60;
@@ -26,7 +25,7 @@ function Trending({ names }) {
   useEffect(() => {
     const fetchData = async () => {
       try {
-       const res=await MelodyMusicsongs("topsongs");
+        const res = await MelodyMusicsongs("topsongs");
         setMusicInfo(
           res.map((song) => ({
             id: song.id,
@@ -44,7 +43,7 @@ function Trending({ names }) {
     };
 
     fetchData();
-  }, [names ? names : ""]);
+  }, [names]);
 
   const play = (id) => {
     setSongid(id);
@@ -55,61 +54,59 @@ function Trending({ names }) {
       {!loading ? (
         <>
           {isAboveMedium ? (
-            <div className=" h-full  flex flex-col ">
+            <div className="h-full flex flex-col bg-black text-white p-4">
               {musicInfo.slice(0, limit).map((song, index) => (
                 <div
-                  className="w-4/6 bg-deep-grey flex items-center gap-8 p-4 m-5 cursor-pointer"
+                  className="flex items-center gap-4 p-4 mb-4 bg-gray-800 rounded-lg hover:bg-gray-700 cursor-pointer transition duration-200"
                   key={song.id}
                   onClick={() => play(song.id)}
                 >
-                  <h1 className="text-2xl w-12">#{index + 1}</h1>{" "}
-                  {/* Fixed width for index */}
-                  <img src={song.image.url} className="h-12" />{" "}
-                  {/* Keep image size fixed */}
-                  <h1 className="text-md flex-grow">{song.year}</h1>{" "}
-                  {/* Allow year to take remaining space */}
-                  <h1 className="text-md flex-grow">{song.album}</h1>{" "}
-                  {/* Allow album to take remaining space */}
-                  <h1 className="text-md w-16">{song.duration}</h1>{" "}
-                  {/* Fixed width for duration */}
+                  <h1 className="text-xl w-12 font-bold">#{index + 1}</h1>
+                  <img src={song.image.url} className="h-12 w-12 rounded-md" alt={song.name} />
+                  <div className="flex-grow">
+                    <h1 className="text-md font-bold">{song.name}</h1>
+                    <p className="text-gray-400">{song.album} • {song.year}</p>
+                  </div>
+                  <h1 className="text-md">{song.duration}</h1>
                   <img
                     src="https://cdn-icons-png.flaticon.com/128/9376/9376391.png"
-                    className="h-12"
-                  />{" "}
-                  {/* Keep image size fixed */}
+                    className="h-8"
+                    alt="options"
+                  />
                 </div>
               ))}
-              <div className="flex  ml-8">
+
+              <div className="flex justify-center">
                 {musicInfo.length > 5 && limit === 5 ? (
                   <button
                     onClick={expandResults}
-                    className="bg-deep-grey w-32 h-12 p-2"
+                    className="bg-green-500 text-white w-32 h-10 rounded-md hover:bg-green-600 transition duration-200"
                   >
-                    <h1 className="font-bold mb-24"> View All</h1>
+                    View All
                   </button>
                 ) : (
                   <button
                     onClick={() => setLimit(5)}
-                    className="bg-deep-grey w-32 h-12 p-2"
+                    className="bg-green-500 text-white w-32 h-10 rounded-md hover:bg-green-600 transition duration-200"
                   >
-                    <h1 className="font-bold mb-24">View Less</h1>
+                    View Less
                   </button>
                 )}
               </div>
             </div>
           ) : (
-            <div className="grid grid-cols-3 p-4">
+            <div className="grid grid-cols-3 gap-4 p-4 bg-black text-white">
               {musicInfo.slice(0, musicInfo.length).map((song) => (
                 <div
-                  className="flex items-center"
+                  className="flex items-center cursor-pointer"
                   key={song.id}
                   onClick={() => play(song.id)}
                 >
-                  <div className="h-24 border-1 bg-deep-grey w-24 text-white  border-0 rounded-md mt-2 flex">
+                  <div className="h-24 w-24 bg-gray-800 rounded-md">
                     <img
                       src={song.image.url}
                       alt={song.title}
-                      className="h-24 w-24 object-cover border-0 rounded-md"
+                      className="h-24 w-24 object-cover rounded-md"
                     />
                   </div>
                 </div>
@@ -118,7 +115,7 @@ function Trending({ names }) {
           )}
         </>
       ) : (
-        <span className="text-red text-3xl font-bold">Loading.....</span>
+        <span className="text-green-500 text-3xl font-bold">Loading...</span>
       )}
     </>
   );

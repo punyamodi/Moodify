@@ -2,7 +2,8 @@ import React, { useContext, useState, useEffect } from "react";
 import { Context } from "../main";
 import { MelodyMusicsongs } from "../saavnapi";
 import he from "he";
-import  {addRecents} from '../Firebase/database';
+import { addRecents } from '../Firebase/database';
+
 function Trendingmobile({ names }) {
   const { setSongid } = useContext(Context);
   const [musicInfo, setMusicInfo] = useState([]);
@@ -47,20 +48,20 @@ function Trendingmobile({ names }) {
   };
 
   return (
-    <div className="flex p-2 gap-4 overflow-x-scroll space-x-2 overflow-y-hidden">
+    <div className="flex p-4 gap-4 overflow-x-scroll space-x-4 bg-black">
       {!loading ? (
         <>
           {musicInfo.map((song) => (
             <div
-              className="flex flex-col items-center pb-4"
+              className="flex flex-col items-center cursor-pointer"
               key={song.id}
               onClick={() => play(song.id, song.name, song.image)}
             >
-              <div className="h-28 p-2 border-1 bg-deep-grey w-28 text-white border-0 rounded-md mt-2">
+              <div className="h-28 w-28 p-2 bg-gray-800 rounded-lg hover:scale-105 transform transition-all duration-200">
                 <img
                   src={song.image}
                   alt={song.name}
-                  className="h-24 w-24 object-cover mb-2 rounded-md"
+                  className="h-24 w-24 object-cover mb-2 rounded-lg"
                 />
                 <p className="text-center font-bold text-white text-sm truncate">
                   {song.name}
@@ -70,7 +71,7 @@ function Trendingmobile({ names }) {
           ))}
         </>
       ) : (
-        <span className="text-red text-3xl font-bold">Loading.....</span>
+        <span className="text-green-500 text-2xl font-bold">Loading...</span>
       )}
     </div>
   );

@@ -1,6 +1,5 @@
 import { fetchHistory, fetchUser } from "../Firebase/database";
 import useMediaQuery from "../useMedia";
-import album from "../assets/albumfull.svg";
 import { useEffect, useState, useContext } from "react";
 import { Context } from "../main";
 
@@ -37,78 +36,93 @@ function Likes() {
                         <>
                             {isAboveMedium ? (
                                 <div
-                                    className="h-screen w-5/6 m-12  mb-12 flex flex-col bg-gradient-album border-1 border-deep-grey shadow-lg overflow-y"
-                                    style={{
-                                        overflowY: "scroll",
-                                        scrollbarWidth: "none",
-                                        msOverflowStyle: "none",
-                                    }}
+                                    className="h-screen w-5/6 m-12 mb-12 flex flex-col bg-black text-white shadow-lg overflow-y-scroll scrollbar-hide"
                                 >
-                                    <div className="w-full h-2/6 bg-white flex bg-gradient-album p-4 border-y-1 border-deep-grey shadow-2xl">
-                                        <img src="https://misc.scdn.co/liked-songs/liked-songs-300.png" />
-                                        <h1 className="font-bold text-3xl p-5">
-                                            Liked <span className="text-red">Songs</span>
-                                        </h1>
+                                    <div className="w-full h-64 bg-gradient-to-b from-green-500 to-black flex items-center p-4">
+                                        <img
+                                            src="https://misc.scdn.co/liked-songs/liked-songs-300.png"
+                                            alt="Liked Songs"
+                                            className="h-48 w-48 rounded-lg shadow-md"
+                                        />
+                                        <div className="ml-5">
+                                            <h1 className="font-bold text-5xl">Liked Songs</h1>
+                                        </div>
                                     </div>
 
-                                    {localUser && likes.map((song, index) => (
-                                        <div
-                                            className="w-5/6 bg-deep-grey flex items-center gap-8 p-4 m-5 cursor-pointer"
-                                            key={song.id}
-                                            onClick={() => play(song.songId)}
-                                        >
-                                            <h1 className="text-2xl w-12">#{index + 1}</h1>
-                                            <img src={song.songUrl} className="h-12" />
-                                            <h1 className="text-md flex-grow">{song.songYear}</h1>
-                                            <h1 className="text-md flex-grow">{song.songName}</h1>
-                                            <img
-                                                src="https://cdn-icons-png.flaticon.com/128/9376/9376391.png"
-                                                className="h-12"
-                                            />
-                                        </div>
-                                    ))}
+                                    <div className="flex flex-col p-6">
+                                        {likes.map((song, index) => (
+                                            <div
+                                                className="flex items-center gap-8 py-4 hover:bg-gray-800 rounded-lg cursor-pointer transition duration-200"
+                                                key={song.id}
+                                                onClick={() => play(song.songId)}
+                                            >
+                                                <span className="text-xl w-12">{index + 1}</span>
+                                                <img
+                                                    src={song.songUrl}
+                                                    className="h-12 w-12 rounded-lg object-cover"
+                                                    alt={song.songName}
+                                                />
+                                                <div className="flex flex-grow justify-between">
+                                                    <h1 className="text-md font-bold">{song.songName}</h1>
+                                                    <h1 className="text-md text-gray-400">{song.songYear}</h1>
+                                                </div>
+                                                <img
+                                                    src="https://cdn-icons-png.flaticon.com/128/9376/9376391.png"
+                                                    className="h-8 w-8"
+                                                    alt="Options"
+                                                />
+                                            </div>
+                                        ))}
+                                    </div>
 
-                                    <div className="h-2/6 mb-24"></div>
+                                    <div className="h-24"></div>
                                 </div>
                             ) : (
                                 <div
-                                    className="h-screen w-full   mb-24 flex flex-col bg-gradient-album border-1 border-deep-grey shadow-lg overflow-y"
-                                    style={{
-                                        overflowY: "scroll",
-                                        scrollbarWidth: "none",
-                                        msOverflowStyle: "none",
-                                    }}
+                                    className="h-screen w-full mb-24 flex flex-col bg-black text-white shadow-lg overflow-y-scroll scrollbar-hide"
                                 >
-                                    <div className="w-full h-2/6 bg-white flex bg-gradient-album p-4 border-y-1 border-deep-grey shadow-2xl">
-                                        <img src='https://misc.scdn.co/liked-songs/liked-songs-300.png' />
-                                        <h1 className="font-bold text-3xl p-5">
-                                            Liked<span className="text-red">Songs</span>
-                                        </h1>
-                                    </div>
-                                    {localUser && likes.map((song, index) => (
-                                        <div
-                                            className="w-5/6 bg-deep-grey flex items-center gap-8 p-4 m-5 cursor-pointer"
-                                            key={song.songId}
-                                            onClick={() => play(song.songId)}
-                                        >
-                                            <p className="text-sm w-full">#{index + 1}</p>
-                                            <img src={song.songUrl} className="h-12" />
-                                            <p className="text-sm flex-grow">{song.songYear}</p>
-                                            <p className="text-sm flex-grow">{song.songName}</p>
+                                    <div className="w-full h-64 bg-gradient-to-b from-green-500 to-black flex items-center p-4">
+                                        <img
+                                            src="https://misc.scdn.co/liked-songs/liked-songs-300.png"
+                                            alt="Liked Songs"
+                                            className="h-48 w-48 rounded-lg shadow-md"
+                                        />
+                                        <div className="ml-5">
+                                            <h1 className="font-bold text-4xl">Liked Songs</h1>
                                         </div>
-                                    ))}
-                                  <div className="h-80 mb-32"></div>
+                                    </div>
+
+                                    <div className="flex flex-col p-6">
+                                        {likes.map((song, index) => (
+                                            <div
+                                                className="flex items-center gap-8 py-4 hover:bg-gray-800 rounded-lg cursor-pointer transition duration-200"
+                                                key={song.id}
+                                                onClick={() => play(song.songId)}
+                                            >
+                                                <span className="text-sm w-8">{index + 1}</span>
+                                                <img
+                                                    src={song.songUrl}
+                                                    className="h-12 w-12 rounded-lg object-cover"
+                                                    alt={song.songName}
+                                                />
+                                                <div className="flex flex-grow justify-between">
+                                                    <h1 className="text-sm font-bold">{song.songName}</h1>
+                                                    <h1 className="text-sm text-gray-400">{song.songYear}</h1>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+
+                                    <div className="h-24"></div>
                                 </div>
-                                
                             )}
-                            
                         </>
                     ) : (
-                        <h1 className="text-red text-3xl font-bold">Login to view your likes</h1>
+                        <h1 className="text-green-500 text-3xl font-bold text-center mt-10">Login to view your likes</h1>
                     )}
                 </>
             ) : (
-                <span className="text-red text-3xl font-bold">Loading.....</span>
+                <span className="text-green-500 text-3xl font-bold">Loading.....</span>
             )}
         </>
     );

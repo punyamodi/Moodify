@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext } from "react";
 import useMediaQuery from "../useMedia";
 import Topsongs from "../Home/topsong";
 import Newrelease from "../Home/newrelease";
@@ -8,7 +8,7 @@ import Albums from "../Albumsongs/albums";
 import { Context } from "../main";
 import Trendingmobile from "../Home/trendingmobile";
 import Newreleasemobile from "../Home/newreleasemobile";
-import { useContext } from "react";
+
 function Discover() {
   const isAboveMedium = useMediaQuery("(min-width:1025px)");
   const { Viewall, setViewall, setPage, page } = useContext(Context);
@@ -22,82 +22,85 @@ function Discover() {
       setPage(name);
     }
   };
+
   return (
     <>
       {isAboveMedium ? (
-        <div
-          className="overflow-y-auto h-screen w-full mb-12"
-          style={{ overflowX: "scroll", minWidth: "100%" }}
-        >
-             <div className="mb-8">
-            <h1 className="text-3xl p-4 m-5">
-              New Releases <span className="text-red font-bold">Songs</span>
+        <div className="overflow-y-auto h-screen w-full p-4">
+          {/* Section: New Releases */}
+          <div className="mb-12">
+            <h1 className="text-4xl font-bold p-4 text-white">
+              New Releases <span className="text-green-500">Songs</span>
             </h1>
             <Newrelease />
           </div>
-          <div className="mb-8">
-            <h1 className="text-3xl p-4 m-5">
-              Trending <span className="text-red font-bold">Songs</span>
+
+          {/* Section: Trending Songs */}
+          <div className="mb-12">
+            <h1 className="text-4xl font-bold p-4 text-white">
+              Trending <span className="text-green-500">Songs</span>
             </h1>
             <Trending />
           </div>
-          <div className="mb-8">
-            <h1 className="text-3xl p-4 m-5">
-              Weekly Top <span className="text-red font-bold">Songs</span>
+
+          {/* Section: Weekly Top Songs */}
+          <div className="mb-12">
+            <h1 className="text-4xl font-bold p-4 text-white">
+              Weekly Top <span className="text-green-500">Songs</span>
             </h1>
             <Topsongs />
           </div>
-          <div className="mb-8">
-            <h1 className="text-3xl p-4 m-5">
-              Top <span className="text-red font-bold">Album</span>
+
+          {/* Section: Popular Albums */}
+          <div className="mb-12">
+            <h1 className="text-4xl font-bold p-4 text-white">
+              Top <span className="text-green-500">Albums</span>
             </h1>
             <Albums />
           </div>
-          <div className="mb-8">
-            <h1 className="text-3xl p-4 m-5">
-              Popular <span className="text-red font-bold">Artists</span>
+
+          {/* Section: Popular Artists */}
+          <div className="mb-12">
+            <h1 className="text-4xl font-bold p-4 text-white">
+              Popular <span className="text-green-500">Artists</span>
             </h1>
             <Artist />
           </div>
-       
         </div>
       ) : (
-        <div
-          className="overflow-y h-screen w-full"
-          style={{ overflowX: "scroll" }}
-        >
-           <h1 className="text-2xl p-2 m-0">
-            New Releases <span className="text-red font-bold">Songs</span>
-          
+        <div className="overflow-y-auto h-screen w-full p-4">
+          {/* Mobile View */}
+          <h1 className="text-2xl font-semibold p-4 text-white">
+            New Releases <span className="text-green-500">Songs</span>
           </h1>
-          <Newrelease />
-          
-          <h1 className="text-2xl p-2 m-0">
-            Trending <span className="text-red font-bold">Songs</span>
-         
+          <Newreleasemobile />
+
+          <h1 className="text-2xl font-semibold p-4 text-white">
+            Trending <span className="text-green-500">Songs</span>
           </h1>
           <Trendingmobile names={"songs"} />
-          <h1 className="text-2xl p-2 m-0">
-            Popular<span className="text-red font-bold">Albums</span>
-          
+
+          <h1 className="text-2xl font-semibold p-4 text-white">
+            Weekly Top <span className="text-green-500">Songs</span>
+          </h1>
+          <Topsongs />
+
+          <h1 className="text-2xl font-semibold p-4 text-white">
+            Popular <span className="text-green-500">Albums</span>
           </h1>
           <Albums />
-          <h1 className="text-2xl p-2 m-0">
-            Weekly Top <span className="text-red font-bold">Songs</span>{" "}
-          
-          </h1>
 
-          <Topsongs />
-         
-          <h1 className="text-2xl p-2 m-0">
-            Popular<span className="text-red font-bold">Artists</span>
+          <h1 className="text-2xl font-semibold p-4 text-white">
+            Popular <span className="text-green-500">Artists</span>
           </h1>
           <Artist />
-        
-          <div className="h-1/6 mb-20"></div>
+
+          {/* Bottom spacing */}
+          <div className="mb-24"></div>
         </div>
       )}
     </>
   );
 }
+
 export default Discover;

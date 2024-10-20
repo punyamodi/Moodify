@@ -5,11 +5,11 @@ import { Context } from "../main";
 import { addRecents } from "../Firebase/database";
 import he from "he";
 import { albumsongsinner } from "../saavnapi";
+
 function Inneralbum({ names }) {
   const isAboveMedium = useMediaQuery("(min-width:768px)");
   const { setSongid, innerAlbum } = useContext(Context);
-  const [image, setimage] = useState([]);
-
+  const [image, setImage] = useState({});
   const [musicInfo, setMusicInfo] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -17,7 +17,7 @@ function Inneralbum({ names }) {
     const fetchData = async () => {
       try {
         const res = await albumsongsinner(innerAlbum);
-        setimage(res.data.data);
+        setImage(res.data.data);
 
         setMusicInfo(
           res.data.data.songs.map((song) => ({
@@ -50,88 +50,115 @@ function Inneralbum({ names }) {
       }
     }
   };
+
   return (
     <>
       {!loading ? (
         <>
           {isAboveMedium ? (
             <div
-              className="h-screen w-5/6 m-12  mb-28 flex flex-col bg-gradient-album border-1 border-deep-grey shadow-lg overflow-y"
+              className="h-screen w-5/6 mx-auto mt-12 mb-28 flex flex-col bg-gradient-to-b from-black via-gray-900 to-black border-1 border-gray-800 shadow-lg overflow-y-auto"
               style={{
-                overflowY: "scroll",
                 scrollbarWidth: "none",
                 msOverflowStyle: "none",
               }}
             >
-              <div className="w-full h-2/6 bg-white flex bg-gradient-album p-4 border-y-1 border-deep-grey shadow-2xl">
-                <img src={image.image[1].url} />
-                <h1 className="font-bold text-3xl p-5">
-                  {image.name}{" "}
-                  <span className="text-red">{image.language}</span>
-                </h1>
-              </div>
-              {musicInfo.slice(0, musicInfo.length).map((song, index) => (
-                <div
-                  className="w-5/6 bg-deep-grey flex items-center gap-8 p-4 m-5 cursor-pointer"
-                  key={song.id}
-                  onClick={() => play(song.id, song.name, song.image.url)}
-                >
-                  <h1 className="text-2xl w-12">#{index + 1}</h1>{" "}
-                  {/* Fixed width for index */}
-                  <img src={song.image.url} className="h-12" />{" "}
-                  {/* Keep image size fixed */}
-                  <h1 className="text-md flex-grow">{song.year}</h1>{" "}
-                  {/* Allow year to take remaining space */}
-                  <h1 className="text-md flex-grow">{song.name}</h1>
-                  <img
-                    src="https://cdn-icons-png.flaticon.com/128/9376/9376391.png"
-                    className="h-12"
-                  />{" "}
-                  {/* Keep image size fixed */}
+              {/* Album Header */}
+              <div className="w-full h-72 flex items-center p-6 bg-gradient-to-b from-gray-800 to-gray-600 border-b border-gray-700 shadow-lg">
+                <img
+                  src={image.image ? image.image[1].url : ""}
+                  alt={image.name}
+                  className="h-64 w-64 object-cover rounded-lg shadow-md"
+                />
+                <div className="ml-8">
+                  <h1 className="font-bold text-5xl text-white">{image.name}</h1>
+                  <p className="text-lg text-gray-400 mt-2">
+                    {image.language ? image.language.toUpperCase() : ""}
+                  </p>
                 </div>
-              ))}
-              <div className="flex  mb-8"></div>
+              </div>
+
+              {/* Songs List */}
+              <div className="p-8">
+                {musicInfo.map((song, index) => (
+                  <div
+                    className="flex items-center gap-8 bg-gray-800 hover:bg-gray-700 p-4 mb-4 rounded-lg cursor-pointer transition duration-300 ease-in-out shadow-lg"
+                    key={song.id}
+                    onClick={() => play(song.id, song.name, song.image.url)}
+                  >
+                    <h1 className="text-2xl text-white font-semibold w-16 text-center">#{index + 1}</h1>
+                    <img
+                      src={song.image.url}
+                      alt={song.name}
+                      className="h-16 w-16 object-cover rounded-md"
+                    />
+                    <div className="flex-grow">
+                      <h1 className="text-xl text-white font-bold">{song.name}</h1>
+                      <p className="text-gray-400">{song.artist}</p>
+                    </div>
+                    <p className="text-gray-400">{song.year}</p>
+                    <img
+                      src="https://cdn-icons-png.flaticon.com/128/9376/9376391.png"
+                      className="h-8"
+                      alt="play icon"
+                    />
+                  </div>
+                ))}
+              </div>
             </div>
           ) : (
             <div
-              className="h-screen w-full   mb-24 flex flex-col bg-gradient-album border-1 border-deep-grey shadow-lg overflow-y"
+              className="h-screen w-full mx-auto mt-12 mb-24 flex flex-col bg-gradient-to-b from-black via-gray-900 to-black border-1 border-gray-800 shadow-lg overflow-y-auto"
               style={{
-                overflowY: "scroll",
                 scrollbarWidth: "none",
                 msOverflowStyle: "none",
               }}
             >
-              <div className="w-full h-2/6 bg-white flex bg-gradient-album p-4 border-y-1 border-deep-grey shadow-2xl">
-                <img src={image.image[1].url} />
-                <h1 className="font-bold text-md p-5">
-                  {image.name}{" "}
-                  <span className="text-red">{image.language}</span>
-                </h1>
-              </div>
-              {musicInfo.slice(0, musicInfo.length).map((song, index) => (
-                <div
-                  className="w-5/6 bg-deep-grey flex items-center gap-8 p-4 m-5 cursor-pointer"
-                  key={song.id}
-                  onClick={() => play(song.id, song.name, song.image.url)}
-                >
-                  <p className="text-sm w-full">#{index + 1}</p>{" "}
-                  {/* Fixed width for index */}
-                  <img src={song.image.url} className="h-12" />{" "}
-                  {/* Keep image size fixed */}
-                  <p className="text-sm flex-grow">{song.year}</p>{" "}
-                  {/* Allow year to take remaining space */}
-                  <p className="text-sm flex-grow">{song.name}</p>
-                  {/* Keep image size fixed */}
+              {/* Album Header for Mobile */}
+              <div className="w-full h-48 flex items-center p-4 bg-gradient-to-b from-gray-800 to-gray-600 border-b border-gray-700 shadow-lg">
+                <img
+                  src={image.image ? image.image[1].url : ""}
+                  alt={image.name}
+                  className="h-32 w-32 object-cover rounded-lg shadow-md"
+                />
+                <div className="ml-4">
+                  <h1 className="font-bold text-3xl text-white">{image.name}</h1>
+                  <p className="text-md text-gray-400 mt-1">
+                    {image.language ? image.language.toUpperCase() : ""}
+                  </p>
                 </div>
-              ))}
-              <div className="flex  ml-8  mb-36"></div>
+              </div>
+
+              {/* Songs List for Mobile */}
+              <div className="p-4">
+                {musicInfo.map((song, index) => (
+                  <div
+                    className="flex items-center gap-4 bg-gray-800 hover:bg-gray-700 p-3 mb-3 rounded-lg cursor-pointer transition duration-300 ease-in-out shadow-lg"
+                    key={song.id}
+                    onClick={() => play(song.id, song.name, song.image.url)}
+                  >
+                    <p className="text-lg text-white font-semibold w-12 text-center">#{index + 1}</p>
+                    <img
+                      src={song.image.url}
+                      alt={song.name}
+                      className="h-12 w-12 object-cover rounded-md"
+                    />
+                    <div className="flex-grow">
+                      <p className="text-md text-white font-bold">{song.name}</p>
+                      <p className="text-gray-400">{song.artist}</p>
+                    </div>
+                    <p className="text-gray-400 text-sm">{song.year}</p>
+                  </div>
+                ))}
+              </div>
             </div>
           )}
         </>
       ) : (
-        <span className="text-red text-3xl font-bold">Loading.....</span>
+        <span className="text-red-500 text-3xl font-bold">Loading.....</span>
       )}
     </>
   );
 }
+
 export default Inneralbum;
