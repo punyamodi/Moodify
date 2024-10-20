@@ -3,5 +3,5 @@ import react from '@vitejs/plugin-react';
 
 export default defineConfig({
   plugins: [react()],
-  base: '/Moodify/', // This should be correct for your deployment
+  base: '/Moodify/', // Only if your app is served from /Moodify/
 });
