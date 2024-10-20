@@ -1,9 +1,8 @@
-[[redirects]]
-  from = "/sitemap.xml"
-  to = "/sitemap.xml"
-  status = 200
+[build]
+  publish = "dist"
+  command = "npm run build"
 
 [[redirects]]
   from = "/*"
-  to = "/index.html"
+  to = "/Moodify/index.html"
   status = 200

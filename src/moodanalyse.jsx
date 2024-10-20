@@ -38,17 +38,22 @@ function Moodanalyse() {
 
   const loadModels = async () => {
     try {
+      const baseURL = "/Moodify/models"; // Update the base path for the models
+  
       await Promise.all([
-        faceapi.nets.tinyFaceDetector.loadFromUri("/models"),
-        faceapi.nets.faceLandmark68Net.loadFromUri("/models"),
-        faceapi.nets.faceRecognitionNet.loadFromUri("/models"),
-        faceapi.nets.faceExpressionNet.loadFromUri("/models")
+        faceapi.nets.tinyFaceDetector.loadFromUri(baseURL),
+        faceapi.nets.faceLandmark68Net.loadFromUri(baseURL),
+        faceapi.nets.faceRecognitionNet.loadFromUri(baseURL),
+        faceapi.nets.faceExpressionNet.loadFromUri(baseURL)
       ]);
-      faceMyDetect();
+  
+      faceMyDetect(); // Your detection function after models are loaded
     } catch (err) {
       console.error("Error loading models:", err);
     }
   };
+  
+  
 
   const faceMyDetect = async () => {
     try {
