@@ -31,7 +31,7 @@ function Landing() {
         <Routes>
           <Route path="/" element={<Home/>}></Route>
           <Route path="/discover" element={<Discover/>}></Route>
-          <Route path="/albums" element={<AlbumFull />} />
+          <Route path="/albums1" element={<AlbumFull />} />
           <Route path="/innerAlbum" element={<Inneralbum />} />
           <Route path="/src/Albumsongs/inneralbum.jsx" element={<Inneralbum />} />
 
