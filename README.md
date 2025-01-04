@@ -1,6 +1,6 @@
-# AI Music Player 🎶
+# Moodify (AI Music Player) 🎶
 
-Welcome to the AI Music Player repository! This is a full-stack progressive web app (PWA) built with React.js, Firebase, and Firestore. It includes a sophisticated music recommendation system powered by Spotify, JioSaavn, and Last.fm APIs, along with a string-matching algorithm to provide accurate recommendations.
+Welcome to Moodify, the AI Music Player repository! This is a full-stack progressive web app (PWA) built with React.js, Firebase, and Firestore. It includes a sophisticated music recommendation system powered by Spotify, JioSaavn, and Last.fm APIs, along with a string-matching algorithm to provide accurate recommendations.
 
 ## Features ✨
 
@@ -18,34 +18,10 @@ Welcome to the AI Music Player repository! This is a full-stack progressive web 
 - **APIs**: Spotify, JioSaavn, Last.fm
 - **Emotion Detection**: face-api.js
 
-## Installation 📦
-
-1. Clone the repository:
-    ```sh
-    git clone https://github.com/your-username/ai-music-player.git
-    ```
-2. Navigate to the project directory:
-    ```sh
-    cd ai-music-player
-    ```
-3. Install dependencies:
-    ```sh
-    npm install
-    ```
-4. Start the development server:
-    ```sh
-    npm start
-    ```
-
 ## Screenshots 📸
 
-![Screenshot 1](https://github.com/powerstone666/MelodyMind/blob/main/Screenshot%20(172).png)
-![Screenshot 2](https://github.com/powerstone666/MelodyMind/blob/main/Screenshot%20(173).png)
-
-## Contributing 🤝
-
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-## License 📄
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+![image](https://github.com/user-attachments/assets/82e30b70-4df0-46fb-abc5-0a6fe82f5e15)
+![image](https://github.com/user-attachments/assets/3311580c-4721-41eb-8d9d-4e7604c7a585)
+![image](https://github.com/user-attachments/assets/12782ad6-4327-4af9-9aca-4a4a756591a1)
+![image](https://github.com/user-attachments/assets/37f7e136-d0c2-466e-821b-a4e34d7b03b7)
+![image](https://github.com/user-attachments/assets/021c6e30-b073-4010-9cab-7644b928353d)
