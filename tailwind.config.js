@@ -14,7 +14,11 @@ export default {
         grey:"#656565",
         "deep-blue":"#010026",
         "deep-grey":"#1F1F1F",
-        "opaque-black":"rgba(0,0,0,0.35)"
+        "opaque-black":"rgba(0,0,0,0.35)",
+        "spotify-black": "#121212",
+        "spotify-dark-gray": "#181818",
+        "spotify-light-gray": "#282828",
+        "spotify-green": "#1DB954",
       },
     },
             backgroundImage: (theme)=>( {
@@ -37,4 +41,3 @@ export default {
         },
   plugins: [],
 }
-

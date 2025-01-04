@@ -23,22 +23,22 @@
   "shortcuts": [
     {
       "name": "Home",
-      "url": "https://melodyminds.netlify.app/",
+      "url": "/",
       "description": "Home Page"
     },
     {
       "name": "Discover",
-      "url": "https://melodyminds.netlify.app/discover",
+      "url": "/discover",
       "description": "Discover"
     },
     {
       "name": "Albums",
-      "url": "https://melodyminds.netlify.app/albums",
+      "url": "/albums",
       "description": "Album"
     },
     {
       "name": "Search",
-      "url": "https://melodyminds.netlify.app/search",
+      "url": "/search",
       "description": "Search"
     }
   ],

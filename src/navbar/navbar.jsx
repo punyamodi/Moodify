@@ -1,32 +1,26 @@
 import React, { useContext, useEffect, useState } from "react";
-import menubar from "../assets/menu.svg";
-import useMediaQuery from "../useMedia";
-import { Context } from "../main";
-import close from "../assets/close-icon.svg";
-import searchicon from "../assets/searchicon.svg";
 import { Link } from "react-router-dom";
+import { Context } from "../main";
 import { getLanguages } from "../saavnapi";
 import { auth } from "../Firebase/firebaseConfig";
 import { signOut } from "firebase/auth";
+import useMediaQuery from "../useMedia";
+import menubar from "../assets/menu.svg";
+import close from "../assets/close-icon.svg";
+import searchicon from "../assets/searchicon.svg";
 
-function Navbar() {
+const Navbar = () => {
   const { search, setSearch, setLanguage, languages, selected, setSelected } = useContext(Context);
   const isAboveMedium = useMediaQuery("(min-width: 1025px)");
   const [isMenuToggled, setIsMenuToggled] = useState(false);
   const localUser = JSON.parse(localStorage.getItem("Users"));
 
-  const searchquery = (e) => {
-    setSearch(e.target.value);
-  };
+  const searchquery = (e) => setSearch(e.target.value);
 
   const signout = async () => {
     await signOut(auth);
     localStorage.removeItem("Users");
     window.location.reload();
-  };
-
-  const clearSearch = () => {
-    setSearch("");
   };
 
   const handleLanguageChange = (event) => {
@@ -40,224 +34,185 @@ function Navbar() {
     getLanguages(languages);
   }, [languages]);
 
+  const LanguageSelector = () => (
+    <select
+      className="w-24 h-8 border-2 border-green-500 rounded-lg bg-transparent text-green-500 outline-none hover:bg-green-500/10 transition-colors duration-200"
+      value={languages}
+      onChange={handleLanguageChange}
+    >
+      {[
+        "hindi", "english", "kannada", "tamil", "telugu", "urdu", "arabic",
+        "malayalam", "punjabi", "korean", "japanese", "spanish", "french",
+        "german", "italian", "portuguese", "turkish", "dutch", "swedish",
+        "indonesian"
+      ].map(lang => (
+        <option key={lang} className="bg-neutral-900 capitalize" value={lang}>
+          {lang.charAt(0).toUpperCase() + lang.slice(1)}
+        </option>
+      ))}
+    </select>
+  );
+
   return (
     <>
       {isAboveMedium ? (
-        <section>
-          <nav className="z-40 w-full px-6 py-4 bg-[#121212] sticky top-0 shadow-lg">
-            <ul className="flex items-center justify-between">
-              {/* Enhanced Search Bar */}
-              <Link to="search" className="flex-1 max-w-[400px]">
-                <div className="relative">
-                  <div className="flex items-center bg-[#121212] text-white rounded-full h-[48px] pr-3 pl-5 w-full border border-transparent focus-within:border-[#1DB954] hover:border-[#1DB954] transition-all duration-300">
-                    <div className="flex items-center flex-1 gap-2">
-                      <img src={searchicon} alt="search icon" className="w-6 h-6 opacity-80" />
-                      <input
-                        type="text"
-                        placeholder="Search for music, podcasts, artists..."
-                        className="bg-transparent outline-none w-full text-[14px] text-white placeholder:text-[#A0A0A0] font-normal leading-normal"
-                        onChange={searchquery}
-                        value={search}
-                      />
-                    </div>
-                    {search && (
-                      <button
-                        className="w-6 h-6 flex items-center justify-center text-[#A0A0A0] hover:text-white transition-colors duration-200"
-                        onClick={clearSearch}
-                        aria-label="Clear search"
-                      >
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="16"
-                          height="16"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        >
-                          <line x1="18" y1="6" x2="6" y2="18"></line>
-                          <line x1="6" y1="6" x2="18" y2="18"></line>
-                        </svg>
-                      </button>
-                    )}
-                  </div>
+        <nav className="z-40 w-full px-6 py-4 bg-[#121212] sticky top-0 shadow-lg">
+          <div className="flex items-center justify-between gap-4">
+            {/* Improved Search Bar */}
+            <div className="flex-1 max-w-[400px]">
+              <div className="relative">
+                <div className="flex items-center bg-[#242424] hover:bg-[#2a2a2a] rounded-full h-[48px] w-full transition-all duration-300 focus-within:bg-[#2a2a2a] focus-within:ring-2 focus-within:ring-white/20">
+                  <img
+                    src={searchicon}
+                    alt="search icon"
+                    className="w-5 h-5 opacity-70 ml-4 mr-2"
+                  />
+                  <input
+                    type="text"
+                    placeholder="What do you want to listen to?"
+                    className="bg-transparent outline-none w-full text-[15px] text-white placeholder:text-[#909090] font-normal py-2 pr-4"
+                    onChange={searchquery}
+                    value={search}
+                  />
                 </div>
-              </Link>
+              </div>
+            </div>
 
-              <div className="flex items-center gap-6">
+            {/* Navigation Links and Actions */}
+            <div className="flex items-center gap-6">
               <Link to="mood" onClick={() => setSelected("/mood")}>
-                <h1
-                  className={`${
-                    selected === "/mood"
-                      ? "text-green-500 font-bold transition-all duration-200"
-                      : "text-white hover:text-green-500 transition-all duration-200"
-                  } text-lg tracking-wide cursor-pointer`}
+                <span className={`${
+                  selected === "/mood"
+                    ? "text-green-500 font-bold"
+                    : "text-white hover:text-green-500"
+                  } text-lg tracking-wide cursor-pointer transition-all duration-200 flex items-center gap-2`}
                 >
-                  Discover Your Mood 🎵
-                </h1>
+                  Discover Your Mood 🎵 (AI)
+                </span>
               </Link>
 
+              <LanguageSelector />
 
-                <select
-                  className={`w-24 h-8 border-0 rounded-md hover:shadow-md bg-transparent text-green outline-none`}
-                  value={languages}
-                  onChange={handleLanguageChange}
-                >
-                  <option className="bg-deep-grey" value="hindi">Hindi</option>
-                  <option className="bg-deep-grey" value="english">English</option>
-                  <option className="bg-deep-grey" value="kannada">Kannada</option>
-                  <option className="bg-deep-grey" value="tamil">Tamil</option>
-                  <option className="bg-deep-grey" value="telugu">Telugu</option>
-                  <option className="bg-deep-grey" value="urdu">Urdu</option>
-                  <option className="bg-deep-grey" value="arabic">Arabic</option>
-                  <option className="bg-deep-grey" value="malayalam">Malayalam</option>
-                  <option className="bg-deep-grey" value="punjabi">Punjabi</option>
-                  <option className="bg-deep-grey" value="korean">Korean</option>
-                  <option className="bg-deep-grey" value="japanese">Japanese</option>
-                  <option className="bg-deep-grey" value="spanish">Spanish</option>
-                  <option className="bg-deep-grey" value="french">French</option>
-                  <option className="bg-deep-grey" value="german">German</option>
-                  <option className="bg-deep-grey" value="italian">Italian</option>
-                  <option className="bg-deep-grey" value="portuguese">Portuguese</option>
-                  <option className="bg-deep-grey" value="turkish">Turkish</option>
-                  <option className="bg-deep-grey" value="dutch">Dutch</option>
-                  <option className="bg-deep-grey" value="swedish">Swedish</option>
-                  <option className="bg-deep-grey" value="indonesian">Indonesian</option>
-                </select>
-
-
-                {!localUser ? (
-                  <div className="flex items-center gap-4">
-                    <Link to="login">
-                      <button className="text-gray-300 hover:text-white font-medium transition-colors duration-200">
-                        Log in
-                      </button>
-                    </Link>
-                    <Link to="signup">
-                      <button className="bg-green-500 hover:bg-green-600 text-black font-medium rounded-full px-8 py-3 transition-colors duration-200">
-                        Sign up
-                      </button>
-                    </Link>
-                  </div>
-                ) : (
-                  <div className="flex items-center gap-4">
+              {!localUser ? (
+                <div className="flex items-center gap-3">
+                  <Link to="login">
+                    <button className="bg-white hover:bg-neutral-200 text-black font-medium rounded-full px-6 py-2 transition-colors duration-200">
+                      Log in
+                    </button>
+                  </Link>
+                  <Link to="signup">
+                    <button className="bg-green-500 hover:bg-green-400 text-black font-medium rounded-full px-6 py-2 transition-colors duration-200">
+                      Sign up
+                    </button>
+                  </Link>
+                </div>
+              ) : (
+                <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-3 bg-neutral-800/50 rounded-full py-1 px-3">
                     <img
                       src="https://cdn-icons-png.flaticon.com/128/16802/16802273.png"
-                      className="h-8 rounded-full"
+                      className="w-6 h-6"
                       alt="user"
                     />
-                    <h1 className="text-white font-medium">{localUser.displayName}</h1>
-                    <button
-                      className="text-gray-300 hover:text-white font-medium transition-colors duration-200"
-                      onClick={signout}
-                    >
-                      Log out
-                    </button>
+                    <span className="text-white font-medium">{localUser.displayName}</span>
                   </div>
-                )}
-              </div>
-            </ul>
-          </nav>
-        </section>
+                  <button
+                    onClick={signout}
+                    className="text-neutral-400 hover:text-white transition-colors duration-200"
+                  >
+                    Logout
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+        </nav>
       ) : (
-        // Mobile menu code
-        <section className="flex justify-end relative right-0">
-          <nav className="z-40 w-full p-4 bg-[#121212]">
-            <ul className="flex items-center justify-between">
-              <li>
-                <h1 className="text-2xl text-white font-bold">MelodyMind</h1>
-              </li>
-              <li>
-              <select
-                className={`w-24 h-8 border-0 rounded-md hover:shadow-md bg-transparent text-green outline-none`}
-                value={languages}
-                onChange={handleLanguageChange}
-              >
-                <option className="bg-deep-grey" value="hindi">Hindi</option>
-                <option className="bg-deep-grey" value="english">English</option>
-                <option className="bg-deep-grey" value="kannada">Kannada</option>
-                <option className="bg-deep-grey" value="tamil">Tamil</option>
-                <option className="bg-deep-grey" value="telugu">Telugu</option>
-                <option className="bg-deep-grey" value="urdu">Urdu</option>
-                <option className="bg-deep-grey" value="arabic">Arabic</option>
-                <option className="bg-deep-grey" value="malayalam">Malayalam</option>
-                <option className="bg-deep-grey" value="punjabi">Punjabi</option>
-                <option className="bg-deep-grey" value="korean">Korean</option>
-                <option className="bg-deep-grey" value="japanese">Japanese</option>
-                <option className="bg-deep-grey" value="spanish">Spanish</option>
-                <option className="bg-deep-grey" value="french">French</option>
-                <option className="bg-deep-grey" value="german">German</option>
-                <option className="bg-deep-grey" value="italian">Italian</option>
-                <option className="bg-deep-grey" value="portuguese">Portuguese</option>
-                <option className="bg-deep-grey" value="turkish">Turkish</option>
-                <option className="bg-deep-grey" value="dutch">Dutch</option>
-                <option className="bg-deep-grey" value="swedish">Swedish</option>
-                <option className="bg-deep-grey" value="indonesian">Indonesian</option>
-              </select>
-
-              </li>
-              <img
-                src={menubar}
-                alt="menu icon"
-                className="p-2 cursor-pointer"
-                onClick={() => setIsMenuToggled(true)}
-              />
-            </ul>
-          </nav>
-        </section>
-      )}
-      {isMenuToggled && !isAboveMedium && (
-        <section className="w-5/6 bg-[#121212] h-screen fixed right-0 top-0 z-50">
-          <div className="flex justify-end p-4">
-            <button onClick={() => setIsMenuToggled(false)}>
-              <img src={close} alt="close" className="w-6" />
-            </button>
-          </div>
-          <h1 className="text-2xl text-white font-bold p-6">MelodyMind</h1>
-          <div className="flex flex-col items-start p-6 gap-4">
-          <Link to="mood" onClick={() => setSelected("/mood")}>
-            <h1
-              className={`${
-                selected === "/mood"
-                  ? "text-green-500 font-bold transition-all duration-200"
-                  : "text-white hover:text-green-500 transition-all duration-200"
-              } text-lg tracking-wide cursor-pointer`}
-            >
-              Discover Your Mood 🎵
-            </h1>
-          </Link>
-
-            {!localUser ? (
-              <>
-                <Link to="login">
-                  <button className="text-green-500 hover:text-green-600">Login</button>
-                </Link>
-                <Link to="signup">
-                  <button className="text-orange-500 hover:text-orange-600">Sign Up</button>
-                </Link>
-              </>
-            ) : (
+        // Mobile Menu
+        <div className="relative">
+          <nav className="z-40 w-full p-4 bg-black/95 backdrop-blur-sm">
+            <div className="flex items-center justify-between">
+              <h1 className="text-2xl text-white font-bold">MelodyMind</h1>
               <div className="flex items-center gap-4">
-                <img
-                  src="https://cdn-icons-png.flaticon.com/128/16802/16802273.png"
-                  className="h-8"
-                  alt="user"
-                />
-                <h1 className="text-white">{localUser.displayName}</h1>
+                <LanguageSelector />
+                <button onClick={() => setIsMenuToggled(true)}>
+                  <img src={menubar} alt="menu" className="w-6 h-6" />
+                </button>
               </div>
-            )}
-            {localUser && (
-              <button className="text-red-500 hover:text-red-600" onClick={signout}>
-                Logout
-              </button>
-            )}
-          </div>
-        </section>
+            </div>
+          </nav>
+
+          {/* Mobile Menu Overlay */}
+          {isMenuToggled && (
+            <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40">
+              <div className="w-5/6 bg-neutral-900 h-screen absolute right-0 top-0 p-6">
+                <div className="flex justify-between items-center mb-8">
+                  <h1 className="text-2xl text-white font-bold">MelodyMind</h1>
+                  <button 
+                    onClick={() => setIsMenuToggled(false)}
+                    className="p-2 hover:bg-neutral-800 rounded-full transition-colors"
+                  >
+                    <img src={close} alt="close" className="w-6 h-6" />
+                  </button>
+                </div>
+
+                <div className="flex flex-col gap-6">
+                  <Link 
+                    to="mood" 
+                    onClick={() => {
+                      setSelected("/mood");
+                      setIsMenuToggled(false);
+                    }}
+                  >
+                    <span className={`${
+                      selected === "/mood"
+                        ? "text-green-500 font-bold"
+                        : "text-white"
+                      } text-lg tracking-wide cursor-pointer transition-all duration-200`}
+                    >
+                      Discover Your Mood 🎵
+                    </span>
+                  </Link>
+
+                  {!localUser ? (
+                    <div className="flex flex-col gap-4">
+                      <Link to="login">
+                        <button className="w-full bg-white hover:bg-neutral-200 text-black font-medium rounded-full py-3 transition-colors duration-200">
+                          Log in
+                        </button>
+                      </Link>
+                      <Link to="signup">
+                        <button className="w-full bg-green-500 hover:bg-green-400 text-black font-medium rounded-full py-3 transition-colors duration-200">
+                          Sign up
+                        </button>
+                      </Link>
+                    </div>
+                  ) : (
+                    <div className="flex flex-col gap-4">
+                      <div className="flex items-center gap-3 bg-neutral-800/50 rounded-full py-2 px-4 w-fit">
+                        <img
+                          src="https://cdn-icons-png.flaticon.com/128/16802/16802273.png"
+                          className="w-6 h-6"
+                          alt="user"
+                        />
+                        <span className="text-white font-medium">{localUser.displayName}</span>
+                      </div>
+                      <button
+                        onClick={signout}
+                        className="text-red-500 hover:text-red-400 flex items-center gap-2 transition-colors duration-200"
+                      >
+                        Logout
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
       )}
     </>
   );
-}
+};
 
 export default Navbar;

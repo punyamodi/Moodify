@@ -13,8 +13,6 @@ import Innerartist from "./Playlist/innerartist";
 import Innersongs from "./AudioPlayer/innersongs";
 import Moodanalyse from "./moodanalyse";
 import {BrowserRouter, Route, Routes} from "react-router-dom";
-import AboutUs from "./about";
-import ContactUs from "./contact";
 import Login from "./login";
 import Signup from "./signup";
 import Likes from "./Library/likes";
@@ -33,7 +31,7 @@ function Landing() {
           <Route path="/discover" element={<Discover/>}></Route>
           <Route path="/albums" element={<AlbumFull/>}></Route>
           <Route path="/innerAlbum" element={<Inneralbum/>}></Route>
-          <Route path="albums/innerAlbum" element={<Inneralbum/>}></Route>
+          <Route path="/albums/innerAlbum" element={<Inneralbum/>}></Route>
           {isAboveMedium &&(
           <Route path="/artist" element={<ArtistPage/>}></Route>
           )}
@@ -41,8 +39,6 @@ function Landing() {
           <Route path="/search" element={<Searchfunc/>}></Route>
           <Route path="/mood" element={<Moodanalyse/>}></Route>
           <Route path="/innersong" element={<Innersongs/>}></Route>
-          <Route path="/about" element={<AboutUs/>}></Route>
-          <Route path="/contact" element={<ContactUs/>}></Route>
           {!localUser ?(
             <>
           <Route path="/login" element={<Login/>}></Route>

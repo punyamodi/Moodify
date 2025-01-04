@@ -27,7 +27,7 @@ function Home() {
       {isAboveMedium ? (
         <div
           className="overflow-y-auto h-screen w-full mb-12 bg-black text-white"
-          style={{ overflowX: "scroll", minWidth: "100%" }}
+          style={{ overflowX: "scroll" }}
         >
           <div className="mb-8">
             <h1 className="text-3xl p-4 m-5 text-white font-bold">

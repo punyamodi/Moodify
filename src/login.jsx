@@ -88,11 +88,11 @@ function Login() {
             <div className="flex justify-between w-full items-center">
               <h1 className="text-sm hover:text-green-500 cursor-pointer">Forget Password {">"}</h1>
               {dloading ? (
-                <button className="bg-green-500 text-white rounded-full px-8 py-3 hover:bg-green-600 transition duration-300">
+                <button className="spotify-button">
                   Login
                 </button>
               ) : (
-                <button className="bg-green-500 text-white rounded-full px-8 py-3 hover:bg-green-600 transition duration-300">
+                <button className="spotify-button">
                   <img
                     src="https://cdn-icons-png.flaticon.com/128/1665/1665733.png"
                     className="animate-spin h-6"

@@ -74,7 +74,7 @@ function Searchfunc() {
                 className="text-green-500 text-md ml-2"
                 onClick={clearSearch}
               >
-                X
+                
               </button>
             )}
           </div>

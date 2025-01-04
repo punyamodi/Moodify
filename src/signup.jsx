@@ -91,9 +91,9 @@ function Signup() {
                             <div className='flex justify-between w-96'>
                                
                                 {dloading ? (
-                                <button className="border-2 border-black p-2 m-4 bg-red w-24">Sign Up</button>
+                                <button className="spotify-button">Sign Up</button>
                                 ):(
-                                    <button className="border-2 border-black p-2 m-4 bg-red w-24">
+                                    <button className="spotify-button">
                                     <img
                                     src="https://cdn-icons-png.flaticon.com/128/1665/1665733.png"
                                     className="animate-spin h-8"
@@ -130,9 +130,9 @@ function Signup() {
                             <div className='flex justify-between w-72'>
                                 <h1 className="p-2 m-4 bg-transparent">Forget Password {">"}</h1>
                                 {dloading ? (
-                                <button className="border-2 border-black p-2 m-4 bg-red w-24">Login</button>
+                                <button className="spotify-button">Login</button>
                                 ):(
-                                    <button className="border-2 border-black p-2 m-4 bg-red w-24">
+                                    <button className="spotify-button">
                                     <img
                                     src="https://cdn-icons-png.flaticon.com/128/1665/1665733.png"
                                     className="animate-spin h-8"

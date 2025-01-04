@@ -55,7 +55,7 @@ function ArtistPage({ names }) {
                       <img
                         src={song.image.url}
                         alt={song.name}
-                        className="h-48 w-48 object-cover rounded-full mb-4 mx-auto"
+                        className="h-48 w-48 object-cover mb-4 mx-auto rounded-lg"
                       />
                       <h1 className="text-center font-bold text-white">
                         {song.name}
