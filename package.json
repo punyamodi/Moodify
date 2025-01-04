@@ -40,8 +40,12 @@
     "tailwindcss": "^3.4.3",
     "vite": "^5.4.9"
   },
+  "engines": {
+    "node": "18.x"
+  },
   "description": "Welcome to the AI Music Player repository! This is a full-stack progressive web app (PWA) built with React.js, Firebase, and Firestore. It includes a sophisticated music recommendation system powered by Spotify, JioSaavn, and Last.fm APIs, along with a string-matching algorithm to provide accurate recommendations.",
   "main": "postcss.config.js",
   "author": "",
   "license": "ISC"
 }
+
