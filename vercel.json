@@ -1,0 +1,9 @@
+{
+  "build": {
+    "env": {
+      "NODE_ENV": "production",
+      "PKG_CONFIG_PATH": "/usr/lib/pkgconfig:/usr/share/pkgconfig",
+      "LD_LIBRARY_PATH": "/usr/lib"
+    }
+  }
+}
