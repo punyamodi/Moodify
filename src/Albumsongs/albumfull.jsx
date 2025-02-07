@@ -1,5 +1,6 @@
 import useMediaQuery from "../useMedia";
 import album from "../assets/albumfull.svg";
+import viewall from "../assets/viewall.svg"; // Import the viewall image
 import { useEffect, useState } from "react";
 import { useContext } from "react";
 import { Context } from "../main";
@@ -16,6 +17,10 @@ function AlbumFull({ names }) {
 
   const expandResults = () => {
     setLimit(musicInfo.length);
+  };
+
+  const collapseResults = () => {
+    setLimit(5);
   };
 
   useEffect(() => {
@@ -95,11 +100,11 @@ function AlbumFull({ names }) {
                   </button>
                 ) : (
                   <button
-                    onClick={expandResults}
+                    onClick={collapseResults}
                     className="flex flex-col items-center justify-center text-white font-bold"
                   >
-                    <img src={viewall} alt="View All" className="mb-2" />
-                    <h1 className="text-green-500">View All</h1>
+                    <img src={viewall} alt="View Less" className="mb-2" />
+                    <h1 className="text-green-500">View Less</h1>
                   </button>
                 )}
               </div>
@@ -137,7 +142,7 @@ function AlbumFull({ names }) {
                   </button>
                 ) : (
                   <button
-                    onClick={() => setLimit(5)}
+                    onClick={collapseResults}
                     className="bg-green-500 text-black rounded-full px-4 py-2 hover:bg-green-600 transition-all duration-300"
                   >
                     View Less
