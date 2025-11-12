@@ -18,34 +18,11 @@ Welcome to the AI Music Player repository! This is a full-stack progressive web 
 - **APIs**: Spotify, JioSaavn, Last.fm
 - **Emotion Detection**: face-api.js
 
-## Installation 📦
-
-1. Clone the repository:
-    ```sh
-    git clone https://github.com/your-username/ai-music-player.git
-    ```
-2. Navigate to the project directory:
-    ```sh
-    cd ai-music-player
-    ```
-3. Install dependencies:
-    ```sh
-    npm install
-    ```
-4. Start the development server:
-    ```sh
-    npm start
-    ```
-
 ## Screenshots 📸
 
-![Screenshot 1](https://github.com/powerstone666/MelodyMind/blob/main/Screenshot%20(172).png)
-![Screenshot 2](https://github.com/powerstone666/MelodyMind/blob/main/Screenshot%20(173).png)
+![image](https://github.com/user-attachments/assets/9af1499b-1085-41ba-a2ea-c358a0c0f4e9)
 
-## Contributing 🤝
+![image](https://github.com/user-attachments/assets/7a328d05-b31f-4fd1-999a-1fdf182c7e97)
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+![image](https://github.com/user-attachments/assets/1392afa9-d690-4c37-9011-211cbf4eaac1)
 
-## License 📄
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
