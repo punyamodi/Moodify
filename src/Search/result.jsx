@@ -14,6 +14,7 @@ function Result({ names }) {
   const [topquery, setTopquery] = useState([]);
   const isAboveMedium = useMediaQuery("(min-width:768px)");
   const [loading, setLoading] = useState(true);
+  const [hoveredId, setHoveredId] = useState(null);
   const Navigate = useNavigate();
 
   useEffect(() => {
@@ -81,7 +82,6 @@ function Result({ names }) {
   const playsinger = (id) => {
     localStorage.setItem("singer", id);
     setSinger(id);
-
     localStorage.setItem("selected", "/artist");
     setSelected("/artist");
   };
@@ -89,7 +89,6 @@ function Result({ names }) {
   const playalbum = (id) => {
     localStorage.setItem("innerAlbum", id);
     setInneralbum(id);
-
     localStorage.setItem("selected", "/albums");
     setSelected("/albums");
   };
@@ -112,190 +111,138 @@ function Result({ names }) {
     }
   };
 
+  if (loading) {
+    return (
+      <div className="space-y-12 pb-12">
+        {[...Array(3)].map((_, sectionIndex) => (
+          <div key={sectionIndex}>
+            <div className="skeleton h-8 w-48 mb-6 rounded-lg" />
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5">
+              {[...Array(5)].map((_, i) => (
+                <div key={i}>
+                  <div className="skeleton aspect-square mb-3 rounded-2xl" />
+                  <div className="skeleton h-4 w-3/4 rounded-lg" />
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+  const SectionHeader = ({ title, accent }) => (
+    <div className="flex items-center gap-3 mb-6">
+      <div className={`w-1 h-8 rounded-full bg-gradient-to-b ${accent}`} />
+      <h2 className="text-xl font-display font-semibold text-white">{title}</h2>
+    </div>
+  );
+
+  const MusicCard = ({ item, onClick, isArtist = false }) => (
+    <div
+      className="music-card group cursor-pointer"
+      onClick={onClick}
+      onMouseEnter={() => setHoveredId(item.id)}
+      onMouseLeave={() => setHoveredId(null)}
+    >
+      <div className={`relative overflow-hidden ${isArtist ? 'rounded-full' : 'rounded-xl'} mb-4`}>
+        <img
+          src={item.image}
+          alt={item.name}
+          className={`w-full aspect-square object-cover transition-transform duration-500 group-hover:scale-110 ${
+            isArtist ? 'rounded-full' : ''
+          }`}
+        />
+        
+        {/* Play Overlay */}
+        <div className={`absolute inset-0 bg-black/40 flex items-center justify-center transition-opacity duration-300 ${
+          hoveredId === item.id ? 'opacity-100' : 'opacity-0'
+        } ${isArtist ? 'rounded-full' : ''}`}>
+          <div className="w-12 h-12 rounded-full bg-gradient-aurora flex items-center justify-center shadow-glow-cyan">
+            <svg className="w-5 h-5 text-white ml-0.5" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M8 5v14l11-7z" />
+            </svg>
+          </div>
+        </div>
+      </div>
+      
+      <h3 className={`text-sm font-medium text-white truncate group-hover:text-aurora-cyan transition-colors ${
+        isArtist ? 'text-center' : ''
+      }`}>
+        {item.name}
+      </h3>
+      {isArtist && <p className="text-xs text-white/40 text-center mt-1">Artist</p>}
+    </div>
+  );
+
   return (
-    <div className="p-4 gap-5 mb-12 cursor-pointer">
-      {!loading ? (
-        <>
-          {isAboveMedium ? (
-            <>
-              {/* Top Songs Section */}
-              <h1 className="text-2xl p-2 m-2 text-white font-semibold">
-                Top <span className="text-green-500">Songs</span>
-              </h1>
-              <div className="grid grid-cols-4 gap-6">
-                {musicInfo.slice(0, 20).map((song) => (
-                  <div
-                    className="bg-gray-900 hover:bg-gray-800 transition duration-300 p-4 rounded-md"
-                    key={song.id}
-                    onClick={() => play(song.id, song.name, song.image)}
-                  >
-                    <img
-                      src={song.image}
-                      alt={song.name}
-                      className="h-48 w-full object-cover rounded-md mb-4"
-                    />
-                    <h1 className="text-center text-white font-semibold truncate">{song.name}</h1>
-                  </div>
-                ))}
-              </div>
+    <div className="space-y-12 pb-32">
+      {/* Top Songs */}
+      {musicInfo.length > 0 && (
+        <section className="animate-fade-in">
+          <SectionHeader title="Songs" accent="from-aurora-cyan to-aurora-teal" />
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5">
+            {musicInfo.slice(0, isAboveMedium ? 10 : 6).map((song) => (
+              <MusicCard
+                key={song.id}
+                item={song}
+                onClick={() => play(song.id, song.name, song.image)}
+              />
+            ))}
+          </div>
+        </section>
+      )}
 
-              {/* Top Albums Section */}
-              <h1 className="text-2xl p-2 m-2 text-white font-semibold">
-                Top <span className="text-green-500">Albums</span>
-              </h1>
-              <div className="grid grid-cols-4 gap-6">
-                {albuminfo.map((album) => (
-                  <Link to="/innerAlbum" key={album.id}>
-                    <div
-                      className="bg-gray-900 hover:bg-gray-800 transition duration-300 p-4 rounded-md"
-                      onClick={() => playalbum(album.id)}
-                    >
-                      <img
-                        src={album.image}
-                        alt={album.name}
-                        className="h-48 w-full object-cover rounded-md mb-4"
-                      />
-                      <h1 className="text-center text-white font-semibold truncate">{album.name}</h1>
-                    </div>
-                  </Link>
-                ))}
-              </div>
+      {/* Top Albums */}
+      {albuminfo.length > 0 && (
+        <section className="animate-fade-in" style={{ animationDelay: '0.1s' }}>
+          <SectionHeader title="Albums" accent="from-aurora-teal to-aurora-cyan" />
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5">
+            {albuminfo.slice(0, isAboveMedium ? 10 : 6).map((album) => (
+              <Link to="/innerAlbum" key={album.id}>
+                <MusicCard
+                  item={album}
+                  onClick={() => playalbum(album.id)}
+                />
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
 
-              {/* Top Artists Section */}
-              <h1 className="text-2xl p-2 m-2 text-white font-semibold">
-                Top <span className="text-green-500">Artists</span>
-              </h1>
-              <div className="grid grid-cols-4 gap-6">
-                {artistinfo.map((artist) => (
-                  <Link to="/innerartist" key={artist.id}>
-                    <div
-                      className="bg-gray-900 hover:bg-gray-800 transition duration-300 p-4 rounded-md"
-                      onClick={() => playsinger(artist.id)}
-                    >
-                      <img
-                        src={artist.image}
-                        alt={artist.name}
-                        className="h-48 w-full object-cover rounded-full mb-4"
-                      />
-                      <h1 className="text-center text-white font-semibold truncate">{artist.name}</h1>
-                    </div>
-                  </Link>
-                ))}
-              </div>
+      {/* Top Artists */}
+      {artistinfo.length > 0 && (
+        <section className="animate-fade-in" style={{ animationDelay: '0.2s' }}>
+          <SectionHeader title="Artists" accent="from-aurora-cyan to-aurora-blue" />
+          <div className="flex flex-wrap gap-8">
+            {artistinfo.slice(0, isAboveMedium ? 8 : 4).map((artist) => (
+              <Link to="/innerartist" key={artist.id} className="w-32">
+                <MusicCard
+                  item={artist}
+                  onClick={() => playsinger(artist.id)}
+                  isArtist
+                />
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
 
-              {/* Top Queries Section */}
-              <h1 className="text-2xl p-2 m-2 text-white font-semibold">
-                Top <span className="text-green-500">Queries</span>
-              </h1>
-              <div className="grid grid-cols-4 gap-6">
-                {topquery.map((query) => (
-                  <div
-                    className="bg-gray-900 hover:bg-gray-800 transition duration-300 p-4 rounded-md"
-                    key={query.id}
-                    onClick={() => playquery(query.id, query.type)}
-                  >
-                    <img
-                      src={query.image}
-                      alt={query.name}
-                      className="h-48 w-full object-cover rounded-md mb-4"
-                    />
-                    <h1 className="text-center text-white font-semibold truncate">{query.name}</h1>
-                  </div>
-                ))}
-              </div>
-            </>
-          ) : (
-            <>
-              {/* Mobile View */}
-              <h1 className="text-2xl p-2 m-2 text-white font-semibold">
-                Top <span className="text-green-500">Songs</span>
-              </h1>
-              <div className="flex overflow-x-scroll space-x-4 p-2">
-                {musicInfo.slice(0, 20).map((song) => (
-                  <div
-                    className="h-28 p-2 bg-gray-900 w-28 text-white rounded-md hover:bg-gray-800 transition duration-200"
-                    key={song.id}
-                    onClick={() => play(song.id, song.name, song.image)}
-                  >
-                    <img
-                      src={song.image}
-                      alt={song.name}
-                      className="h-24 w-24 object-cover rounded-md mb-2"
-                    />
-                    <h1 className="text-center text-sm truncate font-semibold">{song.name}</h1>
-                  </div>
-                ))}
-              </div>
-
-              {/* Top Albums Section */}
-              <h1 className="text-2xl p-2 m-2 text-white font-semibold">
-                Top <span className="text-green-500">Albums</span>
-              </h1>
-              <div className="flex overflow-x-scroll space-x-4 p-2">
-                {albuminfo.slice(0, 10).map((album) => (
-                  <Link to="/innerAlbum" key={album.id}>
-                    <div
-                      className="h-28 p-2 bg-gray-900 w-28 text-white rounded-md hover:bg-gray-800 transition duration-200"
-                      onClick={() => playalbum(album.id)}
-                    >
-                      <img
-                        src={album.image}
-                        alt={album.name}
-                        className="h-24 w-24 object-cover rounded-md mb-2"
-                      />
-                      <h1 className="text-center text-sm truncate font-semibold">{album.name}</h1>
-                    </div>
-                  </Link>
-                ))}
-              </div>
-
-              {/* Top Artists Section */}
-              <h1 className="text-2xl p-2 m-2 text-white font-semibold">
-                Top <span className="text-green-500">Artists</span>
-              </h1>
-              <div className="flex overflow-x-scroll space-x-4 p-2">
-                {artistinfo.slice(0, 10).map((artist) => (
-                  <Link to="/innerartist" key={artist.id}>
-                    <div
-                      className="h-28 p-2 bg-gray-900 w-28 text-white rounded-md hover:bg-gray-800 transition duration-200"
-                      onClick={() => playsinger(artist.id)}
-                    >
-                      <img
-                        src={artist.image}
-                        alt={artist.name}
-                        className="h-24 w-24 object-cover rounded-full mb-2"
-                      />
-                      <h1 className="text-center text-sm truncate font-semibold">{artist.name}</h1>
-                    </div>
-                  </Link>
-                ))}
-              </div>
-
-              {/* Top Queries Section */}
-              <h1 className="text-2xl p-2 m-2 text-white font-semibold">
-                Top <span className="text-green-500">Queries</span>
-              </h1>
-              <div className="flex overflow-x-scroll space-x-4 p-2">
-                {topquery.slice(0, 10).map((query) => (
-                  <div
-                    className="h-28 p-2 bg-gray-900 w-28 text-white rounded-md hover:bg-gray-800 transition duration-200"
-                    key={query.id}
-                    onClick={() => playquery(query.id, query.type)}
-                  >
-                    <img
-                      src={query.image}
-                      alt={query.name}
-                      className="h-24 w-24 object-cover rounded-md mb-2"
-                    />
-                    <h1 className="text-center text-sm truncate font-semibold">{query.name}</h1>
-                  </div>
-                ))}
-              </div>
-            </>
-          )}
-        </>
-      ) : (
-        <span className="text-green-500 text-3xl font-bold">Loading...</span>
+      {/* Top Queries */}
+      {topquery.length > 0 && (
+        <section className="animate-fade-in" style={{ animationDelay: '0.3s' }}>
+          <SectionHeader title="Top Results" accent="from-aurora-green to-aurora-cyan" />
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5">
+            {topquery.slice(0, isAboveMedium ? 10 : 6).map((query) => (
+              <MusicCard
+                key={query.id}
+                item={query}
+                onClick={() => playquery(query.id, query.type)}
+                isArtist={query.type === 'artist'}
+              />
+            ))}
+          </div>
+        </section>
       )}
     </div>
   );

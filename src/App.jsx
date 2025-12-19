@@ -22,12 +22,10 @@ function App() {
   }, [location.pathname, setSelected]);
 
   return (
-    <div className="flex h-screen bg-spotify-black text-white">
+    <div className="flex min-h-screen bg-deep-space text-white">
       <Sidebar />
-      <div className="flex-1 overflow-y-auto">
-        <div className="bg-gradient-to-b from-spotify-dark-gray to-spotify-black p-8">
-          <Landing />
-        </div>
+      <div className="flex-1 overflow-y-auto overflow-x-hidden">
+        <Landing />
       </div>
     </div>
   );

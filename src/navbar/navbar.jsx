@@ -3,7 +3,6 @@ import menubar from "../assets/menu.svg";
 import useMediaQuery from "../useMedia";
 import { Context } from "../main";
 import close from "../assets/close-icon.svg";
-import searchicon from "../assets/searchicon.svg";
 import { Link } from "react-router-dom";
 import { getLanguages } from "../saavnapi";
 import { auth } from "../Firebase/firebaseConfig";
@@ -13,7 +12,17 @@ function Navbar() {
   const { search, setSearch, setLanguage, languages, selected, setSelected } = useContext(Context);
   const isAboveMedium = useMediaQuery("(min-width: 1025px)");
   const [isMenuToggled, setIsMenuToggled] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
   const localUser = JSON.parse(localStorage.getItem("Users"));
+
+  // Handle scroll effect
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 20);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   const searchquery = (e) => {
     setSearch(e.target.value);
@@ -23,10 +32,6 @@ function Navbar() {
     await signOut(auth);
     localStorage.removeItem("Users");
     window.location.reload();
-  };
-
-  const clearSearch = () => {
-    setSearch("");
   };
 
   const handleLanguageChange = (event) => {
@@ -41,223 +46,261 @@ function Navbar() {
   }, [languages]);
 
   return (
-    <>
-      {isAboveMedium ? (
-        <section>
-          <nav className="z-40 w-full px-6 py-4 bg-[#121212] sticky top-0 shadow-lg">
-            <ul className="flex items-center justify-between">
-              {/* Enhanced Search Bar */}
-              <Link to="search" className="flex-1 max-w-[400px]">
-                <div className="relative">
-                  <div className="flex items-center bg-[#121212] text-white rounded-full h-[48px] pr-3 pl-5 w-full border border-transparent focus-within:border-[#1DB954] hover:border-[#1DB954] transition-all duration-300">
-                    <div className="flex items-center flex-1 gap-2">
-                      <img src={searchicon} alt="search icon" className="w-6 h-6 opacity-80" />
-                      <input
-                        type="text"
-                        placeholder="Search for music, podcasts, artists..."
-                        className="bg-transparent outline-none w-full text-[14px] text-white placeholder:text-[#A0A0A0] font-normal leading-normal"
-                        onChange={searchquery}
-                        value={search}
-                      />
-                    </div>
-                    {search && (
-                      <button
-                        className="w-6 h-6 flex items-center justify-center text-[#A0A0A0] hover:text-white transition-colors duration-200"
-                        onClick={clearSearch}
-                        aria-label="Clear search"
-                      >
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="16"
-                          height="16"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        >
-                          <line x1="18" y1="6" x2="6" y2="18"></line>
-                          <line x1="6" y1="6" x2="18" y2="18"></line>
-                        </svg>
-                      </button>
-                    )}
-                  </div>
-                </div>
+    <nav className={`fixed top-0 right-0 z-50 transition-all duration-300 ${
+      isAboveMedium ? 'left-72' : 'left-0'
+    } ${
+      isScrolled 
+        ? 'bg-deep-space/80 backdrop-blur-xl border-b border-white/5' 
+        : 'bg-transparent'
+    }`}>
+      <div className="max-w-7xl mx-auto px-6 lg:px-12 h-20 flex items-center justify-between gap-8">
+        {/* Logo */}
+        {/* Logo - Hidden on Desktop as Sidebar has one */}
+        <Link to="/" className={`flex items-center gap-3 group ${isAboveMedium ? 'hidden' : ''}`}>
+          <div className="w-10 h-10 rounded-xl bg-gradient-aurora flex items-center justify-center shadow-glow-cyan transition-all group-hover:scale-110 group-hover:shadow-glow-teal">
+            <span className="text-xl font-display font-bold text-white">M</span>
+          </div>
+          <span className="text-xl font-display font-bold hidden sm:block">
+            Mood<span className="text-gradient">ify</span>
+          </span>
+        </Link>
+
+        {/* Search Bar */}
+        {isAboveMedium && (
+          <div className="flex-1 max-w-lg">
+            <div className="relative group">
+              <input
+                type="text"
+                placeholder="Search songs, artists, albums..."
+                className="w-full h-12 bg-white/5 border border-white/10 rounded-2xl px-5 pl-12 text-sm 
+                         placeholder:text-white/30 focus:bg-white/10 focus:border-aurora-cyan/50
+                         transition-all duration-300"
+                onChange={searchquery}
+                value={search}
+              />
+              <svg 
+                className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/30 group-focus-within:text-aurora-cyan transition-colors" 
+                fill="none" 
+                viewBox="0 0 24 24" 
+                stroke="currentColor"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+            </div>
+          </div>
+        )}
+
+        {/* Right Section */}
+        <div className="flex items-center gap-4">
+          {isAboveMedium && (
+            <>
+              {/* Mood Analysis Link */}
+              <Link 
+                to="mood" 
+                onClick={() => setSelected("/mood")}
+                className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${
+                  selected === "/mood" 
+                    ? "bg-aurora-cyan/20 text-aurora-cyan border border-aurora-cyan/30" 
+                    : "text-white/60 hover:text-white hover:bg-white/5"
+                }`}
+              >
+                <span className="flex items-center gap-2">
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  Mood Analysis
+                </span>
               </Link>
 
-              <div className="flex items-center gap-6">
-                <Link to="mood" onClick={() => setSelected("/mood")}>
-                  <h1
-                    className={`${
-                      selected === "/mood"
-                        ? "text-green-500 font-bold transition-all duration-200"
-                        : "text-white hover:text-green-500 transition-all duration-200"
-                    } text-lg tracking-wide cursor-pointer`}
-                  >
-                    Discover Your Mood 🎵
-                  </h1>
-                </Link>
-
+              {/* Language Selector */}
+              <div className="relative">
                 <select
-                  className={`w-24 h-8 border-0 rounded-md hover:shadow-md bg-transparent text-green outline-none`}
+                  className="appearance-none bg-white/5 border border-white/10 rounded-xl px-4 py-2 pr-10 text-sm 
+                           text-white/70 focus:bg-white/10 focus:border-aurora-cyan/50 outline-none cursor-pointer
+                           transition-all"
                   value={languages}
                   onChange={handleLanguageChange}
                 >
-                  <option className="bg-deep-grey" value="hindi">Hindi</option>
-                  <option className="bg-deep-grey" value="english">English</option>
-                  <option className="bg-deep-grey" value="kannada">Kannada</option>
-                  <option className="bg-deep-grey" value="tamil">Tamil</option>
-                  <option className="bg-deep-grey" value="telugu">Telugu</option>
-                  <option className="bg-deep-grey" value="urdu">Urdu</option>
-                  <option className="bg-deep-grey" value="arabic">Arabic</option>
-                  <option className="bg-deep-grey" value="malayalam">Malayalam</option>
-                  <option className="bg-deep-grey" value="punjabi">Punjabi</option>
-                  <option className="bg-deep-grey" value="korean">Korean</option>
-                  <option className="bg-deep-grey" value="japanese">Japanese</option>
-                  <option className="bg-deep-grey" value="spanish">Spanish</option>
-                  <option className="bg-deep-grey" value="french">French</option>
-                  <option className="bg-deep-grey" value="german">German</option>
-                  <option className="bg-deep-grey" value="italian">Italian</option>
-                  <option className="bg-deep-grey" value="portuguese">Portuguese</option>
-                  <option className="bg-deep-grey" value="turkish">Turkish</option>
-                  <option className="bg-deep-grey" value="dutch">Dutch</option>
-                  <option className="bg-deep-grey" value="swedish">Swedish</option>
-                  <option className="bg-deep-grey" value="indonesian">Indonesian</option>
+                  {["hindi", "english", "kannada", "tamil", "telugu", "urdu", "punjabi"].map(lang => (
+                    <option key={lang} className="bg-deep-space capitalize" value={lang}>
+                      {lang.charAt(0).toUpperCase() + lang.slice(1)}
+                    </option>
+                  ))}
                 </select>
+                <svg className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </div>
+            </>
+          )}
 
-                {!localUser ? (
-                  <div className="flex items-center gap-4">
-                    <Link to="login">
-                      <button className="bg-green-500 hover:bg-green-600 text-black font-medium rounded-full px-8 py-3 transition-colors duration-200">
-                        Log in
-                      </button>
-                    </Link>
-                    <Link to="signup">
-                      <button className="bg-green-500 hover:bg-green-600 text-black font-medium rounded-full px-8 py-3 transition-colors duration-200">
-                        Sign up
-                      </button>
-                    </Link>
-                  </div>
+          {/* Auth Buttons / User Profile */}
+          {!localUser ? (
+            <div className="flex items-center gap-3">
+              <Link to="login" className="text-sm font-medium text-white/70 hover:text-white transition-colors hidden sm:block">
+                Login
+              </Link>
+              <Link to="signup" className="btn-primary py-2.5 px-5 text-sm">
+                <span>Get Started</span>
+              </Link>
+            </div>
+          ) : (
+            <div className="flex items-center gap-4">
+              <div className="hidden sm:flex flex-col items-end">
+                <span className="text-sm font-medium text-white">
+                  {localUser.displayName || localUser.email?.split('@')[0] || 'User'}
+                </span>
+                <button 
+                  onClick={signout} 
+                  className="text-xs text-white/40 hover:text-red-400 transition-colors"
+                >
+                  Sign Out
+                </button>
+              </div>
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-aurora-cyan to-aurora-teal flex items-center justify-center overflow-hidden">
+                {localUser.photoURL ? (
+                  <img src={localUser.photoURL} alt="user" className="w-full h-full object-cover" />
                 ) : (
-                  <div className="flex items-center gap-4">
-                    <img
-                      src="https://cdn-icons-png.flaticon.com/128/16802/16802273.png"
-                      className="h-8 rounded-full"
-                      alt="user"
-                    />
-                    <h1 className="text-white font-medium">{localUser.displayName}</h1>
-                    <button
-                      className="text-gray-300 hover:text-white font-medium transition-colors duration-200"
-                      onClick={signout}
-                    >
-                      Log out
-                    </button>
-                  </div>
+                  <span className="text-lg font-bold text-white">
+                    {localUser.displayName?.charAt(0).toUpperCase() || localUser.email?.charAt(0).toUpperCase() || 'U'}
+                  </span>
                 )}
               </div>
-            </ul>
-          </nav>
-        </section>
-      ) : (
-        // Mobile menu code
-        <section className="flex justify-end relative right-0">
-          <nav className="z-40 w-full p-4 bg-[#121212]">
-            <ul className="flex items-center justify-between">
-              <li>
-                <h1 className="text-2xl text-white font-bold">MelodyMind</h1>
-              </li>
-              <li>
-                <select
-                  className={`w-24 h-8 border-0 rounded-md hover:shadow-md bg-transparent text-green outline-none`}
-                  value={languages}
-                  onChange={handleLanguageChange}
-                >
-                  <option className="bg-deep-grey" value="hindi">Hindi</option>
-                  <option className="bg-deep-grey" value="english">English</option>
-                  <option className="bg-deep-grey" value="kannada">Kannada</option>
-                  <option className="bg-deep-grey" value="tamil">Tamil</option>
-                  <option className="bg-deep-grey" value="telugu">Telugu</option>
-                  <option className="bg-deep-grey" value="urdu">Urdu</option>
-                  <option className="bg-deep-grey" value="arabic">Arabic</option>
-                  <option className="bg-deep-grey" value="malayalam">Malayalam</option>
-                  <option className="bg-deep-grey" value="punjabi">Punjabi</option>
-                  <option className="bg-deep-grey" value="korean">Korean</option>
-                  <option className="bg-deep-grey" value="japanese">Japanese</option>
-                  <option className="bg-deep-grey" value="spanish">Spanish</option>
-                  <option className="bg-deep-grey" value="french">French</option>
-                  <option className="bg-deep-grey" value="german">German</option>
-                  <option className="bg-deep-grey" value="italian">Italian</option>
-                  <option className="bg-deep-grey" value="portuguese">Portuguese</option>
-                  <option className="bg-deep-grey" value="turkish">Turkish</option>
-                  <option className="bg-deep-grey" value="dutch">Dutch</option>
-                  <option className="bg-deep-grey" value="swedish">Swedish</option>
-                  <option className="bg-deep-grey" value="indonesian">Indonesian</option>
-                </select>
-              </li>
-              <img
-                src={menubar}
-                alt="menu icon"
-                className="p-2 cursor-pointer"
-                onClick={() => setIsMenuToggled(true)}
-              />
-            </ul>
-          </nav>
-        </section>
-      )}
-      {isMenuToggled && !isAboveMedium && (
-        <section className="w-5/6 bg-[#121212] h-screen fixed right-0 top-0 z-50">
-          <div className="flex justify-end p-4">
-            <button onClick={() => setIsMenuToggled(false)}>
-              <img src={close} alt="close" className="w-6" />
-            </button>
-          </div>
-          <h1 className="text-2xl text-white font-bold p-6">MelodyMind</h1>
-          <div className="flex flex-col items-start p-6 gap-4">
-            <Link to="mood" onClick={() => setSelected("/mood")}>
-              <h1
-                className={`${
-                  selected === "/mood"
-                    ? "text-green-500 font-bold transition-all duration-200"
-                    : "text-white hover:text-green-500 transition-all duration-200"
-                } text-lg tracking-wide cursor-pointer`}
-              >
-                Discover Your Mood 🎵
-              </h1>
-            </Link>
+            </div>
+          )}
 
-            {!localUser ? (
-              <>
-                <Link to="login">
-                  <button className="bg-green-500 hover:bg-green-600 text-black font-medium rounded-full px-8 py-3 transition-colors duration-200">
-                    Login
-                  </button>
-                </Link>
-                <Link to="signup">
-                  <button className="bg-green-500 hover:bg-green-600 text-black font-medium rounded-full px-8 py-3 transition-colors duration-200">
-                    Sign Up
-                  </button>
-                </Link>
-              </>
-            ) : (
-              <div className="flex items-center gap-4">
-                <img
-                  src="https://cdn-icons-png.flaticon.com/128/16802/16802273.png"
-                  className="h-8"
-                  alt="user"
+          {/* Mobile Menu Button */}
+          {!isAboveMedium && (
+            <button 
+              onClick={() => setIsMenuToggled(true)} 
+              className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center hover:bg-white/10 transition-colors"
+            >
+              <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+              </svg>
+            </button>
+          )}
+        </div>
+      </div>
+
+      {/* Mobile Menu Drawer */}
+      {isMenuToggled && (
+        <div className="fixed inset-0 z-[100] animate-fade-in">
+          {/* Backdrop */}
+          <div 
+            className="absolute inset-0 bg-deep-space/95 backdrop-blur-xl"
+            onClick={() => setIsMenuToggled(false)}
+          />
+          
+          {/* Menu Content */}
+          <div className="relative h-full flex flex-col p-8 animate-slide-in-right">
+            {/* Header */}
+            <div className="flex justify-between items-center">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-gradient-aurora flex items-center justify-center">
+                  <span className="text-xl font-display font-bold text-white">M</span>
+                </div>
+                <span className="text-xl font-display font-bold">Moodify</span>
+              </div>
+              <button 
+                onClick={() => setIsMenuToggled(false)}
+                className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center hover:bg-white/10 transition-colors"
+              >
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
+            {/* Search Bar Mobile */}
+            <div className="mt-8">
+              <div className="relative">
+                <input
+                  type="text"
+                  placeholder="Search..."
+                  className="w-full h-14 bg-white/5 border border-white/10 rounded-2xl px-5 pl-12 text-base
+                           placeholder:text-white/30 focus:bg-white/10"
+                  onChange={searchquery}
+                  value={search}
                 />
-                <h1 className="text-white">{localUser.displayName}</h1>
+                <svg className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/30" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+              </div>
+            </div>
+
+            {/* Navigation Links */}
+            <nav className="flex flex-col gap-2 mt-12 flex-1">
+              {[
+                { to: "/", label: "Home", icon: "M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" },
+                { to: "/mood", label: "Mood Analysis", icon: "M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" },
+                { to: "/discover", label: "Discover", icon: "M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" },
+                { to: "/albums", label: "Albums", icon: "M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" },
+                { to: "/liked", label: "Liked Songs", icon: "M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" }
+              ].map((item, i) => (
+                <Link
+                  key={i}
+                  to={item.to}
+                  onClick={() => setIsMenuToggled(false)}
+                  className={`flex items-center gap-4 p-4 rounded-2xl text-lg font-medium transition-all ${
+                    selected === item.to 
+                      ? "bg-aurora-cyan/20 text-white border border-aurora-cyan/30" 
+                      : "text-white/60 hover:bg-white/5 hover:text-white"
+                  }`}
+                >
+                  <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d={item.icon} />
+                  </svg>
+                  {item.label}
+                </Link>
+              ))}
+            </nav>
+
+            {/* Auth Buttons */}
+            {!localUser && (
+              <div className="grid grid-cols-2 gap-4 mt-auto">
+                <Link 
+                  to="login" 
+                  onClick={() => setIsMenuToggled(false)} 
+                  className="btn-secondary text-center py-4"
+                >
+                  Login
+                </Link>
+                <Link 
+                  to="signup" 
+                  onClick={() => setIsMenuToggled(false)} 
+                  className="btn-primary text-center py-4"
+                >
+                  <span>Sign Up</span>
+                </Link>
               </div>
             )}
+
             {localUser && (
-              <button className="text-red-500 hover:text-red-600" onClick={signout}>
-                Logout
-              </button>
+              <div className="mt-auto pt-8 border-t border-white/5">
+                <div className="flex items-center gap-4 p-4 rounded-2xl bg-white/5">
+                  <div className="w-12 h-12 rounded-xl bg-gradient-aurora flex items-center justify-center">
+                    <span className="text-xl font-bold">{localUser.displayName?.charAt(0) || 'U'}</span>
+                  </div>
+                  <div className="flex-1">
+                    <p className="font-medium">{localUser.displayName}</p>
+                    <p className="text-sm text-white/40">{localUser.email}</p>
+                  </div>
+                  <button 
+                    onClick={signout}
+                    className="w-10 h-10 rounded-xl bg-red-500/20 text-red-400 flex items-center justify-center hover:bg-red-500/30 transition-colors"
+                  >
+                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
             )}
           </div>
-        </section>
+        </div>
       )}
-    </>
+    </nav>
   );
 }
 
